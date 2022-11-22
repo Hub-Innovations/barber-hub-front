@@ -51,6 +51,11 @@ export const HeaderButton = styled.button`
     box-shadow: ${(p: ButtonProps) =>
       p.outline ? '0 0 0 6px #FFDD00' : '0 0 0 6px #ffffff'};
   }
+
+  @media (max-width: 320px) {
+    width: 120px;
+    height: 52px;
+  }
 `;
 
 export const ButtonsFlex = styled.div`

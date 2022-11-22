@@ -8,6 +8,10 @@ export const Title = styled.h1`
   color: #111111;
   position: relative;
 
+  @media (max-width: 769px) {
+    font-size: 28px;
+  }
+
   ::before {
     content: '';
     width: 24px;
@@ -19,5 +23,10 @@ export const Title = styled.h1`
     bottom: 4px;
     z-index: -1;
     left: -10px;
+
+    @media (max-width: 769px) {
+      width: 20px;
+      height: 20px;
+    }
   }
 `;

@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Styled from './style';
 import Link from 'next/link';
-import BarberLogo from '../../assets/barber-logo.png';
+import BarberLogo from '../../assets/barber-logo-sm.png';
 import { FaInstagram } from 'react-icons/fa';
 import { FaFacebook } from 'react-icons/fa';
 import { FaYoutube } from 'react-icons/fa';

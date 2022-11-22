@@ -8,4 +8,8 @@ export const ImageIntroHome = styled.div`
     max-width: 100%;
     height: 520px;
   }
+
+  @media (max-width: 769px) {
+    display: none;
+  }
 `;

@@ -16,20 +16,40 @@ export const TheFooterInformationLinks = styled.div`
   border-bottom: 1px solid #cccccc;
   padding-bottom: 30px;
 
+  @media (max-width: 769px) {
+    flex-direction: column-reverse;
+    border-bottom: 0px solid #cccccc;
+    padding-bottom: 0px;
+  }
+
   p {
     font-family: 'Poppins', 'sans-serif';
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
-    line-height: 30px;
+    line-height: 1.4;
     color: #cccccc;
     text-decoration: none;
+
+    @media (max-width: 769px) {
+      border-bottom: 1px solid #cccccc;
+      padding-bottom: 20px;
+      font-size: 14px;
+    }
   }
 
   ul {
     display: flex;
     align-items: center;
     gap: 16px;
+    list-style: none;
+
+    @media (max-width: 769px) {
+      flex-direction: column;
+      align-items: flex-start;
+      border-bottom: 1px solid #cccccc;
+      padding-bottom: 20px;
+    }
 
     li {
       a {
@@ -37,13 +57,17 @@ export const TheFooterInformationLinks = styled.div`
         font-style: normal;
         font-weight: 400;
         font-size: 16px;
-        line-height: 30px;
+        line-height: 1.4;
         color: #cccccc;
         text-decoration: none;
         transition: 0.3s;
 
         :hover {
           color: #ffffff;
+        }
+
+        @media (max-width: 769px) {
+          font-size: 14px;
         }
       }
     }
@@ -55,11 +79,23 @@ export const TheFooterSocialsLinks = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  @media (max-width: 769px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
 
   ul {
     display: flex;
     align-items: center;
     gap: 16px;
     list-style: none;
+
+    @media (max-width: 769px) {
+      grid-column: 1 / -1;
+      grid-row: 1;
+      margin-bottom: 20px;
+      border-bottom: 1px solid #cccccc;
+      padding-bottom: 24px;
+    }
   }
 `;
