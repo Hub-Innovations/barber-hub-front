@@ -1,10 +1,10 @@
 import React from 'react';
-import Title from '../components/Title';
+import HomePage from '../components/Home';
 
 export default function Home() {
   return (
     <div>
-      <Title>Barber hub</Title>
+      <HomePage />
     </div>
   );
 }
