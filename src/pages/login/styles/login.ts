@@ -67,7 +67,7 @@ export const Label = styled.label`
   }
 `;
 
-const AnimeErrorMessage = keyframes`
+export const AnimeErrorMessage = keyframes`
   from {
     opacity: 0;
     transform: translate3d(-30px,0,0);
