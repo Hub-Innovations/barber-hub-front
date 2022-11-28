@@ -1,11 +1,16 @@
 import React from 'react';
-import * as Styled from './styles/login';
+import * as Styled from '../../styles/Login/login';
 import BarberLogo from '../../assets/barber-logo.png';
 import Image from 'next/image';
 import LoginButton from '../../components/Form/LoginButton';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import InputNormal from '../../components/Form/InputNormal';
-import { Input, Label, ErrorMessage, InputIcon } from './styles/login';
+import {
+  Input,
+  Label,
+  ErrorMessage,
+  InputIcon,
+} from '../../styles/Login/login';
 import { FaExclamationTriangle, FaEye } from 'react-icons/fa';
 
 type Inputs = {
