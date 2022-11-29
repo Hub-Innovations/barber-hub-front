@@ -58,7 +58,7 @@ export const Input = styled.input`
   background: #181b23;
   border: 1px solid #ffdd00;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 14px;
   font-family: 'Poppins', 'sans-serif';
   font-weight: 400;
   color: #ffffff;
@@ -69,6 +69,7 @@ export const Input = styled.input`
 
   @media (max-width: 600px) {
     height: 40px;
+    font-size: 12px;
   }
 `;
 
