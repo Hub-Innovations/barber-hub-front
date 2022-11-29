@@ -3,6 +3,10 @@ import styled from 'styled-components';
 export const WhyUseBarberHubContainer = styled.div`
   margin-top: 100px;
   padding: 0 60px;
+
+  @media (max-width: 769px) {
+    padding: 0 24px;
+  }
 `;
 
 export const WhyUserBarberHubContent = styled.div`

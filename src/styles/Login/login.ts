@@ -21,6 +21,16 @@ export const LoginGeneralContainer = styled.div`
   min-height: 464px;
   border-radius: 8px;
 
+  @media (max-width: 600px) {
+    width: 320px;
+    min-height: 400px;
+    padding: 20px;
+  }
+
+  @media (max-width: 320px) {
+    width: 260px;
+  }
+
   img {
     margin: 0 auto;
   }
@@ -36,6 +46,10 @@ export const LoginGeneralForm = styled.div`
   form {
     label + label {
       margin-top: 32px;
+
+      @media (max-width: 600px) {
+        margin-top: 24px;
+      }
     }
   }
 `;
@@ -44,7 +58,7 @@ export const Input = styled.input`
   background: #181b23;
   border: 1px solid #ffdd00;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 12px;
   font-family: 'Poppins', 'sans-serif';
   font-weight: 400;
   color: #ffffff;
@@ -52,6 +66,10 @@ export const Input = styled.input`
   height: 44px;
   display: block;
   padding: 8px;
+
+  @media (max-width: 600px) {
+    height: 40px;
+  }
 `;
 
 export const Label = styled.label`
@@ -61,6 +79,10 @@ export const Label = styled.label`
   color: #ffffff;
   display: block;
   position: relative;
+
+  @media (max-width: 600px) {
+    font-size: 16px;
+  }
 
   input {
     margin-top: 8px;

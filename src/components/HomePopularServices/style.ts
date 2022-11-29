@@ -3,6 +3,10 @@ import styled from 'styled-components';
 export const PopularServicesContainer = styled.div`
   padding: 0 60px;
   margin-top: 32px;
+
+  @media (max-width: 769px) {
+    padding: 0 24px;
+  }
 `;
 
 export const PopularServicesList = styled.ul`

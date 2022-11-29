@@ -7,6 +7,11 @@ export const TheFooterBg = styled.footer`
 
 export const TheFooterContent = styled.div`
   padding: 40px 60px;
+
+  @media (max-width: 769px) {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 `;
 
 export const TheFooterInformationLinks = styled.div`
