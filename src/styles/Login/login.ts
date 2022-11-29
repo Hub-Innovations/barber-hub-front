@@ -10,8 +10,12 @@ export const LoginGeneralContainerAlignCenter = styled.div`
   display: grid;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 100vh;
+  background-color: #181b23;
+
+  /* tem que usar min height para ele poder 100% da tela e completar o background de cima que pega 100vh se não fica a parte não visível da tela em branco */
+  min-height: 100%;
+  padding-bottom: 20px;
+  padding-top: 20px;
 `;
 
 export const LoginGeneralContainer = styled.div`
@@ -50,6 +54,41 @@ export const LoginGeneralForm = styled.div`
       @media (max-width: 600px) {
         margin-top: 24px;
       }
+    }
+  }
+
+  // falando diretamente com o input que tem o mask, para ter controle sobre os estilos do componente
+  input[name='barberCnpj'] {
+    background: #181b23;
+    border: 1px solid #ffdd00;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: 'Poppins', 'sans-serif';
+    font-weight: 400;
+    color: #ffffff;
+    width: 100%;
+    height: 44px;
+    display: block;
+    padding: 8px;
+    margin-top: 8px;
+
+    @media (max-width: 600px) {
+      margin-top: 24px;
+      height: 40px;
+      font-size: 12px;
+    }
+  }
+
+  label[id='CNPJ'] {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    color: #ffffff;
+    display: block;
+    position: relative;
+
+    @media (max-width: 600px) {
+      font-size: 16px;
     }
   }
 `;
@@ -101,6 +140,10 @@ export const AnimeErrorMessage = keyframes`
   }
 `;
 
+interface ErroMessageProps {
+  inputMask?: boolean;
+}
+
 export const ErrorMessage = styled.p`
   color: #ffdd00;
   font-size: 14px;
@@ -109,6 +152,7 @@ export const ErrorMessage = styled.p`
   margin-top: 12px;
   display: block;
   animation: ${AnimeErrorMessage} 0.4s;
+  margin-bottom: ${(p: ErroMessageProps) => (p.inputMask ? '24px' : '0')};
 
   display: flex;
   align-items: center;
@@ -124,5 +168,27 @@ export const InputIcon = styled.div`
     cursor: pointer;
     color: #ffffff;
     right: 12px;
+  }
+`;
+
+export const LinkToOtherRoutesLoginFlex = styled.div`
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 24px;
+
+  a {
+    font-family: 'Poppins', 'sans-serif';
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 24px;
+    color: #ffdd00;
+    letter-spacing: 0.015rem;
+    max-width: inherit;
+    position: relative;
+    padding-bottom: 2px;
+    transition: 0.2s;
+    text-decoration: 2px underline #ffdd00;
+    cursor: pointer;
   }
 `;
