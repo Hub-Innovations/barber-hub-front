@@ -106,6 +106,11 @@ export const Input = styled.input`
   display: block;
   padding: 8px;
 
+  :disabled {
+    opacity: 0.1;
+    cursor: not-allowed;
+  }
+
   @media (max-width: 600px) {
     height: 40px;
     font-size: 12px;
@@ -122,6 +127,13 @@ export const Label = styled.label`
 
   @media (max-width: 600px) {
     font-size: 16px;
+  }
+
+  // estilos para qualquer tooltip que ficar de acordo com o bale
+  button[id='buttonTooltip'] {
+    margin-top: 0px;
+    background-color: transparent;
+    padding: 2px 4px;
   }
 
   input {
@@ -159,6 +171,10 @@ export const ErrorMessage = styled.p`
   gap: 8px;
 `;
 
+interface InputIcon {
+  disabled?: boolean;
+}
+
 export const InputIcon = styled.div`
   position: relative;
 
@@ -166,7 +182,7 @@ export const InputIcon = styled.div`
     position: absolute;
     top: 30%;
     cursor: pointer;
-    color: #ffffff;
+    color: ${(p: InputIcon) => (p.disabled ? '#cccccc' : '#ffffff')};
     right: 12px;
   }
 `;
@@ -190,5 +206,19 @@ export const LinkToOtherRoutesLoginFlex = styled.div`
     transition: 0.2s;
     text-decoration: 2px underline #ffdd00;
     cursor: pointer;
+  }
+`;
+
+export const HaveRegisterText = styled.p`
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 400;
+  font-family: 'Poppins', 'sans-serif';
+  text-align: center;
+  margin-top: 40px;
+
+  a {
+    color: #ffdd00;
+    text-decoration: underline;
   }
 `;
