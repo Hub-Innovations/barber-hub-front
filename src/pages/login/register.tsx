@@ -16,6 +16,7 @@ import { FaInfoCircle } from 'react-icons/fa';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
 // import InputMask from 'react-input-mask';
+import LoginHeader from '../../components/LoginHeader';
 
 type Inputs = {
   barberName: string;
@@ -95,6 +96,7 @@ function Register() {
 
   return (
     <StyledLogin.LoginBg>
+      <LoginHeader register={false} />
       <StyledLogin.LoginGeneralContainerAlignCenter>
         <StyledLogin.LoginGeneralContainer>
           <Image src={BarberLogo} alt="Barber logo" />

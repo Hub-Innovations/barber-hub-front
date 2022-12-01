@@ -6,6 +6,17 @@ export const LoginBg = styled.section`
   height: 100vh;
 `;
 
+export const AnimeLogin = keyframes`
+  from {
+    opacity: 0;
+    transform: translate3d(-30px,0,0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0,0,0);
+  }
+`;
+
 export const LoginGeneralContainerAlignCenter = styled.div`
   display: grid;
   justify-content: center;
@@ -24,6 +35,7 @@ export const LoginGeneralContainer = styled.div`
   width: 464px;
   min-height: 464px;
   border-radius: 8px;
+  animation: ${AnimeLogin} 1s forwards;
 
   @media (max-width: 600px) {
     width: 320px;

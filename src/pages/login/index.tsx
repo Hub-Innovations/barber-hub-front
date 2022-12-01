@@ -12,6 +12,7 @@ import {
 } from '../../styles/Login/login';
 import { FaExclamationTriangle, FaEye } from 'react-icons/fa';
 import Link from 'next/link';
+import LoginHeader from '../../components/LoginHeader';
 
 type Inputs = {
   userEmail: string;
@@ -42,6 +43,7 @@ function Login() {
   // falta fazer a lógica para trocar esse componente para a criação /  perdeu senha
   return (
     <Styled.LoginBg>
+      <LoginHeader register={true} />
       <Styled.LoginGeneralContainerAlignCenter>
         <Styled.LoginGeneralContainer>
           <Image src={BarberLogo} alt="Barber logo" />
