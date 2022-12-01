@@ -20,7 +20,6 @@ export const HeaderContent = styled.div`
   padding: 0 60px;
 
   @media (max-width: 769px) {
-    flex-direction: column;
     padding: 0 20px;
   }
 `;

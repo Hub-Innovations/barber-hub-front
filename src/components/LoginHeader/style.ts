@@ -16,12 +16,6 @@ export const LoginHeaderContainer = styled.header`
     padding: 20px;
   }
 
-  @media (max-width: 460px) {
-    flex-direction: ${(p: LoginHeaderProps) =>
-      p.registerFlex ? 'column' : 'row'};
-    gap: ${(p: LoginHeaderProps) => (p.registerFlex ? '20px' : '40px')};
-  }
-
   a[id='login'] {
     background-color: #ffffff;
     color: #000000;
