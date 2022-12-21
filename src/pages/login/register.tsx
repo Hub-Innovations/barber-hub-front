@@ -17,14 +17,29 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
 // import InputMask from 'react-input-mask';
 import LoginHeader from '../../components/LoginHeader';
+import { useQueryClient, useMutation } from 'react-query';
+import { http } from '../../../api/http';
+import ToastAlertError from '../../components/Alerts/ToastAlertError';
+import Router from 'next/router';
 
 type Inputs = {
-  barberName: string;
+  //barberName: string;
   // barberCnpj: string;
   email: string;
   password: string;
-  confirmPassword: string;
-  userEmail: string;
+  confirmPassword?: string;
+};
+
+interface ToastProps {
+  visible: boolean;
+  title?: string;
+  message?: string;
+  status: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
+}
+
+const createEmployee = async (data: Inputs) => {
+  const { data: response } = await http.post('/auth/register', data);
+  return response;
 };
 
 function Register() {
@@ -35,6 +50,11 @@ function Register() {
     React.useState(true);
   const [samePassword, setSamePassword] = React.useState(true);
   const [checkEmail, setCheckEmail] = React.useState(true);
+  const queryClient = useQueryClient();
+  const [toast, setToast] = React.useState<ToastProps>({
+    visible: false,
+    status: 'error',
+  });
 
   const {
     register,
@@ -43,27 +63,30 @@ function Register() {
     formState: { errors },
   } = useForm<Inputs>();
 
+  const { mutate, isLoading } = useMutation(createEmployee, {
+    onSuccess: (data) => {
+      localStorage.setItem('token', data.token);
+      Router.push('/profile');
+    },
+    onError: (err: any) => {
+      setToast({
+        visible: true,
+        title: 'Um erro aconteceu',
+        message: 'Um erro aconteceu durante o cadastro',
+        status: 'error',
+      });
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries('create');
+    },
+  });
+
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    setLoading(true);
-    // lógica para fazer a requisição para o login vai ficar aqui dentro
-
-    // verificando se as senhas digitadas são iguais, se forem já faz a request, não precisou fazer a lógica nos changes dos campos de senha
-    // pq a unica validação que tem é essa a outra do email vai ser feita ao change
-    // verificando se o email é válido tbm
-    if (data.password === data.confirmPassword && checkEmail) {
-      setTimeout(() => {
-        console.log('%c⧭', 'color: #00a3cc', data);
-        setLoading(false);
-      }, 3000);
-    } else {
-      setLoading(false);
-      setSamePassword(false);
-
-      // retirando a mensagem da tela após alguns segundos até melhoras essa lógica
-      setTimeout(() => {
-        setSamePassword(true);
-      }, 2000);
-    }
+    const user = {
+      email: data.email,
+      password: data.password,
+    };
+    mutate(user);
   };
 
   function handleCheckWritePassword(e: any) {
@@ -102,7 +125,7 @@ function Register() {
           <Image src={BarberLogo} alt="Barber logo" />
           <StyledLogin.LoginGeneralForm>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Label>
+              {/* <Label>
                 Nome da sua barbearia
                 <Input
                   type="text"
@@ -114,7 +137,7 @@ function Register() {
                     This field is required
                   </ErrorMessage>
                 )}
-              </Label>
+              </Label> */}
               <Label
                 onBlur={(e) => handleCheckEmail(e)}
                 onChange={handleChangeCheckEmail}
@@ -232,7 +255,7 @@ function Register() {
                   </ErrorMessage>
                 )}
               </Label>
-              <LoginButton loading={loading} text="Entrar" type="submit" />
+              <LoginButton loading={isLoading} text="Entrar" type="submit" />
             </form>
             <StyledLogin.HaveRegisterText>
               Já possui registo? <Link href="/login">entrar</Link>
@@ -240,6 +263,13 @@ function Register() {
           </StyledLogin.LoginGeneralForm>
         </StyledLogin.LoginGeneralContainer>
       </StyledLogin.LoginGeneralContainerAlignCenter>
+      {toast.visible && (
+        <ToastAlertError
+          toastStatus={toast.status}
+          messageText={toast.message}
+          messageTitle={toast.title}
+        />
+      )}
     </StyledLogin.LoginBg>
   );
 }

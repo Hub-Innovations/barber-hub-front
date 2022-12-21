@@ -13,16 +13,36 @@ import {
 import { FaExclamationTriangle, FaEye } from 'react-icons/fa';
 import Link from 'next/link';
 import LoginHeader from '../../components/LoginHeader';
+import { useQueryClient, useMutation } from 'react-query';
+import { http } from '../../../api/http';
+import ToastAlertError from '../../components/Alerts/ToastAlertError';
+import Router from 'next/router';
 
-type Inputs = {
-  userEmail: string;
-  userPassword: string;
+const createEmployee = async (data: Inputs) => {
+  const { data: response } = await http.post('/auth/login', data);
+  return response;
 };
 
+type Inputs = {
+  email: string;
+  password: string;
+};
+
+interface ToastProps {
+  visible: boolean;
+  title?: string;
+  message?: string;
+  status: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
+}
+
 function Login() {
-  const [loading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [showLoginRegister, setShowLoginRegister] = React.useState(false);
+  const queryClient = useQueryClient();
+  const [toast, setToast] = React.useState<ToastProps>({
+    visible: false,
+    status: 'error',
+  });
 
   const {
     register,
@@ -31,16 +51,41 @@ function Login() {
     formState: { errors },
   } = useForm<Inputs>();
 
+  const { mutate, isLoading } = useMutation(createEmployee, {
+    onSuccess: (data) => {
+      localStorage.setItem('token', data.token);
+      Router.push('/profile');
+    },
+    onError: (err: any) => {
+      if (err.response.status === 400) {
+        setToast({
+          visible: true,
+          title: 'Um erro aconteceu',
+          message: 'Credencias inválidas, por favor tente novamente.',
+          status: 'error',
+        });
+      } else {
+        setToast({
+          visible: true,
+          title: 'Um erro aconteceu',
+          status: 'error',
+          message:
+            'Um erro aconteceu, tente novamente ou entre em contato com nossa equipe de suporte',
+        });
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries('create');
+    },
+  });
+
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    // lógica para fazer a requisição para o login vai ficar aqui dentro
-    setLoading(true);
-    setTimeout(() => {
-      console.log('%c⧭', 'color: #00a3cc', data);
-      setLoading(false);
-    }, 3000);
+    const user = {
+      ...data,
+    };
+    mutate(user);
   };
 
-  // falta fazer a lógica para trocar esse componente para a criação /  perdeu senha
   return (
     <Styled.LoginBg>
       <LoginHeader register={true} />
@@ -54,9 +99,9 @@ function Login() {
                   Email
                   <Input
                     type="email"
-                    {...register('userEmail', { required: true })}
+                    {...register('email', { required: true })}
                   />
-                  {errors.userEmail && (
+                  {errors.email && (
                     <ErrorMessage>
                       <FaExclamationTriangle />
                       This field is required
@@ -69,18 +114,18 @@ function Login() {
                   <InputIcon>
                     <Input
                       type={showPassword ? 'text' : 'password'}
-                      {...register('userPassword', { required: true })}
+                      {...register('password', { required: true })}
                     />
                     <FaEye onClick={() => setShowPassword(!showPassword)} />
                   </InputIcon>
-                  {errors.userPassword && (
+                  {errors.password && (
                     <ErrorMessage>
                       <FaExclamationTriangle />
                       This field is required
                     </ErrorMessage>
                   )}
                 </Label>
-                <LoginButton loading={loading} text="Entrar" type="submit" />
+                <LoginButton loading={isLoading} text="Entrar" type="submit" />
               </form>
             )}
           </Styled.LoginGeneralForm>
@@ -90,6 +135,13 @@ function Login() {
           </Styled.LinkToOtherRoutesLoginFlex>
         </Styled.LoginGeneralContainer>
       </Styled.LoginGeneralContainerAlignCenter>
+      {toast.visible && (
+        <ToastAlertError
+          toastStatus={toast.status}
+          messageText={toast.message}
+          messageTitle={toast.title}
+        />
+      )}
     </Styled.LoginBg>
   );
 }
