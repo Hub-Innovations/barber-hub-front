@@ -15,7 +15,7 @@ import Link from 'next/link';
 import LoginHeader from '../../components/LoginHeader';
 import { useQueryClient, useMutation } from 'react-query';
 import { http } from '../../../api/http';
-import ToastAlertError from '../../components/Alerts/ToastAlertError';
+import ToastALert from '../../components/Alerts/ToastAlert';
 import Router from 'next/router';
 
 const createEmployee = async (data: Inputs) => {
@@ -29,7 +29,6 @@ type Inputs = {
 };
 
 interface ToastProps {
-  visible: boolean;
   title?: string;
   message?: string;
   status: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
@@ -40,9 +39,9 @@ function Login() {
   const [showLoginRegister, setShowLoginRegister] = React.useState(false);
   const queryClient = useQueryClient();
   const [toast, setToast] = React.useState<ToastProps>({
-    visible: false,
     status: 'error',
   });
+  const [showToast, setShowToast] = React.useState(false);
 
   const {
     register,
@@ -55,22 +54,22 @@ function Login() {
     onSuccess: (data) => {
       localStorage.setItem('token', data.token);
       Router.push('/profile');
+      setShowToast(false);
     },
     onError: (err: any) => {
       if (err.response.status === 400) {
+        setShowToast(true);
         setToast({
-          visible: true,
           title: 'Um erro aconteceu',
           message: 'Credencias inválidas, por favor tente novamente.',
           status: 'error',
         });
       } else {
+        setShowToast(true);
         setToast({
-          visible: true,
-          title: 'Um erro aconteceu',
+          title: 'default',
           status: 'error',
-          message:
-            'Um erro aconteceu, tente novamente ou entre em contato com nossa equipe de suporte',
+          message: 'default',
         });
       }
     },
@@ -94,7 +93,10 @@ function Login() {
           <Image src={BarberLogo} alt="Barber logo" />
           <Styled.LoginGeneralForm>
             {!showLoginRegister && (
-              <form onSubmit={handleSubmit(onSubmit)}>
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                onClick={(e) => setShowToast(false)}
+              >
                 <Label>
                   Email
                   <Input
@@ -135,8 +137,8 @@ function Login() {
           </Styled.LinkToOtherRoutesLoginFlex>
         </Styled.LoginGeneralContainer>
       </Styled.LoginGeneralContainerAlignCenter>
-      {toast.visible && (
-        <ToastAlertError
+      {showToast && (
+        <ToastALert
           toastStatus={toast.status}
           messageText={toast.message}
           messageTitle={toast.title}

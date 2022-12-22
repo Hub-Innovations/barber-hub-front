@@ -19,11 +19,11 @@ import Link from 'next/link';
 import LoginHeader from '../../components/LoginHeader';
 import { useQueryClient, useMutation } from 'react-query';
 import { http } from '../../../api/http';
-import ToastAlertError from '../../components/Alerts/ToastAlertError';
+import ToastALert from '../../components/Alerts/ToastAlert';
 import Router from 'next/router';
 
 type Inputs = {
-  //barberName: string;
+  name: string;
   // barberCnpj: string;
   email: string;
   password: string;
@@ -31,7 +31,6 @@ type Inputs = {
 };
 
 interface ToastProps {
-  visible: boolean;
   title?: string;
   message?: string;
   status: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
@@ -45,16 +44,15 @@ const createEmployee = async (data: Inputs) => {
 function Register() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
   const [disabledConfirmPassword, setDisabledConfirmPassword] =
     React.useState(true);
   const [samePassword, setSamePassword] = React.useState(true);
   const [checkEmail, setCheckEmail] = React.useState(true);
   const queryClient = useQueryClient();
   const [toast, setToast] = React.useState<ToastProps>({
-    visible: false,
     status: 'error',
   });
+  const [showToast, setShowToast] = React.useState(false);
 
   const {
     register,
@@ -67,12 +65,13 @@ function Register() {
     onSuccess: (data) => {
       localStorage.setItem('token', data.token);
       Router.push('/profile');
+      setShowToast(false);
     },
     onError: (err: any) => {
+      setShowToast(true);
       setToast({
-        visible: true,
-        title: 'Um erro aconteceu',
-        message: 'Um erro aconteceu durante o cadastro',
+        title: 'default',
+        message: 'default',
         status: 'error',
       });
     },
@@ -85,6 +84,7 @@ function Register() {
     const user = {
       email: data.email,
       password: data.password,
+      name: data.name,
     };
     mutate(user);
   };
@@ -124,20 +124,20 @@ function Register() {
         <StyledLogin.LoginGeneralContainer>
           <Image src={BarberLogo} alt="Barber logo" />
           <StyledLogin.LoginGeneralForm>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              {/* <Label>
-                Nome da sua barbearia
-                <Input
-                  type="text"
-                  {...register('barberName', { required: true })}
-                />
-                {errors.barberName && (
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              onClick={(e) => setShowToast(false)}
+            >
+              <Label>
+                Nome
+                <Input type="text" {...register('name', { required: true })} />
+                {errors.name && (
                   <ErrorMessage>
                     <FaExclamationTriangle />
                     This field is required
                   </ErrorMessage>
                 )}
-              </Label> */}
+              </Label>
               <Label
                 onBlur={(e) => handleCheckEmail(e)}
                 onChange={handleChangeCheckEmail}
@@ -263,8 +263,8 @@ function Register() {
           </StyledLogin.LoginGeneralForm>
         </StyledLogin.LoginGeneralContainer>
       </StyledLogin.LoginGeneralContainerAlignCenter>
-      {toast.visible && (
-        <ToastAlertError
+      {showToast && (
+        <ToastALert
           toastStatus={toast.status}
           messageText={toast.message}
           messageTitle={toast.title}

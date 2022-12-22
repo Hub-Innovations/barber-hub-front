@@ -29,11 +29,15 @@ export const LoginGeneralContainerAlignCenter = styled.div`
   padding-top: 20px;
 `;
 
+interface LoginSizesProps {
+  small?: boolean;
+}
+
 export const LoginGeneralContainer = styled.div`
   background-color: #1f2029;
   padding: 32px;
   width: 464px;
-  min-height: 464px;
+  min-height: ${(p: LoginSizesProps) => (p.small ? 'auto' : '464px')};
   border-radius: 8px;
   animation: ${AnimeLogin} 1s forwards;
 
