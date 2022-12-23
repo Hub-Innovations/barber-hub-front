@@ -119,8 +119,15 @@ export const FormGrid = styled.div`
     justify-self: end;
   }
 
+  div[id='CEP'] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
   input[name='cellphone'],
-  input[name='fixCellphone'] {
+  input[name='fixCellphone'],
+  input[name='cep'] {
     background: #ffffff;
     border: 2px solid #181b23;
     border-radius: 6px;
@@ -139,7 +146,8 @@ export const FormGrid = styled.div`
   }
 
   label[id='CELLPHONE'],
-  label[id='FIX-CELLPHONE'] {
+  label[id='FIX-CELLPHONE'],
+  label[id='CEP-MASK'] {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
     font-size: 18px;
@@ -213,4 +221,14 @@ export const checkBoxFlex = styled.div`
     font-family: 'Poppins', 'sans-serif';
     font-weight: 400;
   }
+`;
+
+export const helpLink = styled.a`
+  color: #000000;
+  text-decoration: 2px underline #ffdd00;
+  font-size: 12px;
+  font-weight: normal;
+  font-family: 'Roboto', 'sans-serif';
+  margin-top: 4px;
+  cursor: pointer;
 `;
