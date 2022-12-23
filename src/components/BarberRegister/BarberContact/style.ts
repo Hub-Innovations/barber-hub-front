@@ -18,16 +18,24 @@ export const Input = styled.input`
   display: block;
   padding: 8px;
 
+  :disabled {
+    opacity: 0.2;
+  }
+
   @media (max-width: 600px) {
     height: 40px;
   }
 `;
 
+interface LabelProps {
+  disabled?: boolean;
+}
+
 export const Label = styled.label`
   font-family: 'Poppins', sans-serif;
   font-weight: 400;
   font-size: 18px;
-  color: #000000;
+  color: ${(p: LabelProps) => (p.disabled ? '#cccccc' : '#000000')};
   display: block;
 
   @media (max-width: 600px) {
@@ -111,6 +119,42 @@ export const FormGrid = styled.div`
     justify-self: end;
   }
 
+  input[name='cellphone'],
+  input[name='fixCellphone'] {
+    background: #ffffff;
+    border: 2px solid #181b23;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: 'Poppins', 'sans-serif';
+    font-weight: 400;
+    color: #000000;
+    width: 100%;
+    height: 44px;
+    display: block;
+    padding: 8px;
+
+    @media (max-width: 600px) {
+      height: 40px;
+    }
+  }
+
+  label[id='CELLPHONE'],
+  label[id='FIX-CELLPHONE'] {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    color: #000000;
+    display: block;
+
+    @media (max-width: 600px) {
+      font-size: 16px;
+    }
+
+    input {
+      margin-top: 8px;
+    }
+  }
+
   @media (max-width: 769px) {
     grid-template-columns: 1fr;
 
@@ -133,11 +177,40 @@ export const FormButton = styled.button`
   height: 44px;
   transition: box-shadow 0.4s;
 
+  :disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
   :hover {
     box-shadow: 0 0 0 4px #ffdd00;
   }
 
   @media (max-width: 769px) {
     width: 280px;
+  }
+`;
+
+export const CheckBox = styled.input`
+  position: relative;
+  display: inline-block;
+  border: 1px solid #ccc;
+  width: 16px;
+  height: 16px;
+  background: #eee;
+  cursor: pointer;
+`;
+
+export const checkBoxFlex = styled.div`
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+
+  p {
+    font-size: 12px;
+    color: #000000;
+    font-family: 'Poppins', 'sans-serif';
+    font-weight: 400;
   }
 `;

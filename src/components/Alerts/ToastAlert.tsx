@@ -19,6 +19,13 @@ function ToastALert({ messageTitle, messageText, toastStatus }: ToastProps) {
     messageText =
       'Ops! Parece que ocorreu um erro, durante a sua requisição, tente novamente ou entre com contato com o suporte.';
     messageTitle = 'Um erro aconteceu';
+  } else if (
+    toastStatus === 'success' &&
+    messageText === 'default' &&
+    messageTitle === 'default'
+  ) {
+    messageText = 'Todas as suas mudanças, foram salvas, com sucesso!';
+    messageTitle = 'Mudanças salvas com sucesso!';
   }
 
   return (
