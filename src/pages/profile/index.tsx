@@ -3,7 +3,14 @@ import AdminDrawer from '../../components/BarberAdmin/Drawer';
 import AdminHeader from '../../components/BarberAdmin/Header';
 import * as Styled from '../../styles/Admin/profile';
 import BarberRegisterContact from '../../components/BarberRegister/BarberContact';
-import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react';
+import {
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Flex,
+} from '@chakra-ui/react';
 
 function AdminProfile() {
   return (
@@ -11,11 +18,17 @@ function AdminProfile() {
       <AdminHeader />
       <AdminDrawer />
       <Styled.ProfileContainer>
-        <Tabs colorScheme="pink">
+        <Tabs isFitted colorScheme="orange" variant="soft-rounded">
           <TabList>
-            <Tab>Contato / Endereço</Tab>
-            <Tab>Serviços / Preços</Tab>
-            <Tab isDisabled>Logo / Banner</Tab>
+            <Tab onClick={(e) => console.log(e)}>
+              <Styled.TabLabel>Contato</Styled.TabLabel>
+            </Tab>
+            <Tab>
+              <Styled.TabLabel>Serviços</Styled.TabLabel>
+            </Tab>
+            <Tab>
+              <Styled.TabLabel>Logo</Styled.TabLabel>
+            </Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
