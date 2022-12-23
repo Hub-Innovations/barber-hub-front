@@ -48,7 +48,7 @@ function UpdatePassword() {
     status: 'error',
   });
   const [showToast, setShowToast] = React.useState(false);
-  const [openSuccessDialog, setOpenDialog] = React.useState(true);
+  const [openSuccessDialog, setOpenDialog] = React.useState(false);
 
   const {
     register,

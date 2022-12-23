@@ -21,6 +21,7 @@ import { useQueryClient, useMutation } from 'react-query';
 import { http } from '../../../api/http';
 import ToastALert from '../../components/Alerts/ToastAlert';
 import Router from 'next/router';
+import { regexpToEmail } from 'helpers/Form/regexp';
 
 type Inputs = {
   name: string;
@@ -100,8 +101,7 @@ function Register() {
   }
 
   function handleCheckEmail(e: any) {
-    let regexp =
-      /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+    let regexp = regexpToEmail;
     let emailIsValid = regexp.test(e.target.value);
 
     if (emailIsValid) {
