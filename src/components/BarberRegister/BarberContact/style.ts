@@ -232,3 +232,33 @@ export const helpLink = styled.a`
   margin-top: 4px;
   cursor: pointer;
 `;
+
+export const ShowBarberLinkContainer = styled.div`
+  padding-bottom: 40px;
+  margin-top: 32px;
+
+  p {
+    font-family: 'Poppins', 'sans-serif';
+    font-size: 14px;
+    font-weight: normal;
+    color: #000000;
+    margin-bottom: 12px;
+  }
+
+  a {
+    color: #181b23;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Roboto', 'sans-serif';
+    padding-top: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+`;
+
+export const ShowBarberLinkFlex = styled.div`
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+`;
