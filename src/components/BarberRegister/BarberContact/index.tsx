@@ -6,18 +6,40 @@ import * as Styled from './style';
 import { Label, Input } from './style';
 import { useQueryClient, useMutation, useQuery } from 'react-query';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Box, CircularProgress, Spinner } from '@chakra-ui/react';
+import {
+  Box,
+  CircularProgress,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Spinner,
+  Text,
+} from '@chakra-ui/react';
 import ToastALert from 'components/Alerts/ToastAlert';
 import { regexpCleanCelPhoneNumber, regexpToEmail } from 'helpers/Form/regexp';
 import InputMask from 'react-input-mask';
 import { onlyNumber } from 'helpers/Form/onlyNumber';
 import { urlCep } from 'helpers/Form/helpCep/searchCepUrl';
 import axios from 'axios';
-import { BsArrowReturnRight, BsArrowRight } from 'react-icons/bs';
+import {
+  BsArrowReturnRight,
+  BsArrowRight,
+  BsPencil,
+  BsPenFill,
+} from 'react-icons/bs';
 import { AiOutlineCopy } from 'react-icons/ai';
-import { BarberShopAlreadyExists } from 'helpers/ErrorMessages/errorMessages';
+import {
+  BarberShopAlreadyExists,
+  BarberShopUrlAlreadyExists,
+} from 'helpers/ErrorMessages/errorMessages';
+import { Input as ChckraInput } from '@chakra-ui/react';
 
 type Inputs = {
+  _id: string | null;
   cellphone: string;
   fixCellphone: string;
   email: string;
@@ -32,10 +54,25 @@ type Inputs = {
   city: string;
 };
 
-const createEmployee = async (data: any) => {
+type BarberUrl = {
+  newUrl: string;
+};
+
+const createBarber = async (data: any) => {
   const token = localStorage.getItem('token');
 
   const { data: response } = await http.post('/barbershop', data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response;
+};
+
+const editBarber = async (data: any) => {
+  const token = localStorage.getItem('token');
+
+  const { data: response } = await http.put('/barbershop', data, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -53,6 +90,17 @@ const getBarberInfo = async () => {
   });
 
   return data;
+};
+
+const editBarberUrl = async (data: any) => {
+  const token = localStorage.getItem('token');
+
+  const { data: response } = await http.patch('/barbershop/change-url', data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response;
 };
 
 interface ToastProps {
@@ -74,6 +122,9 @@ function BarberRegisterContact() {
   const { data, status } = useQuery('barber', getBarberInfo);
   const [any, forceUpdate] = useReducer((num) => num + 1, 0);
   const [barberUrl, setBarberUrl] = React.useState('');
+  const [barberHaveId, setBarberHaveId] = React.useState(null);
+  const [isOpenEditUrlModal, setIsOpenEditUrlModal] = React.useState(false);
+  const [currentBarberUrl, setCurrentBarberUrl] = React.useState('');
 
   const {
     register,
@@ -84,25 +135,64 @@ function BarberRegisterContact() {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const { mutate, isLoading } = useMutation(createEmployee, {
+  const BarberUrl = useForm<BarberUrl>();
+
+  const { mutate, isLoading } = useMutation(
+    barberHaveId ? editBarber : createBarber,
+    {
+      onSuccess: (data) => {
+        setShowToast(true);
+        setToast({
+          title: 'default',
+          status: 'success',
+          message: 'default',
+        });
+      },
+      onError: (err: any) => {
+        setShowToast(true);
+        if (err.response.data.message === BarberShopAlreadyExists) {
+          setToast({
+            title: 'Email já registrado',
+            status: 'error',
+            message:
+              'Este email já está em uso, por favor, registre outro email para a sua barbearia',
+          });
+        } else {
+          setToast({
+            title: 'default',
+            status: 'error',
+            message: 'default',
+          });
+        }
+      },
+      onSettled: () => {
+        queryClient.invalidateQueries('create');
+      },
+    }
+  );
+
+  const BarberEditUrlMutate = useMutation(editBarberUrl, {
     onSuccess: (data) => {
+      console.log('%c⧭', 'color: #ff0000', data);
       setShowToast(true);
       setToast({
-        title: 'default',
+        title: 'Url alterada com sucesso',
         status: 'success',
-        message: 'default',
+        message: 'A nova url da sua barbearia foi alterada e salva com sucesso',
       });
     },
     onError: (err: any) => {
-      setShowToast(true);
-      if (err.response.data.message === BarberShopAlreadyExists) {
+      console.log('%c⧭', 'color: #9c66cc', err);
+      if (err.response.data.message === BarberShopUrlAlreadyExists) {
+        setShowToast(true);
         setToast({
-          title: 'Email já registrado',
+          title: 'Url já cadastrada',
           status: 'error',
           message:
-            'Este email já está em uso, por favor, registre outro email para a sua barbearia',
+            'Já temos essa url cadastrada em nosso sistema, por favor tente outra',
         });
       } else {
+        setShowToast(true);
         setToast({
           title: 'default',
           status: 'error',
@@ -114,6 +204,15 @@ function BarberRegisterContact() {
       queryClient.invalidateQueries('create');
     },
   });
+
+  const onSubmitEditBarberUrl: SubmitHandler<BarberUrl> = (data) => {
+    const baseUrl = 'barber-hub.com';
+    const newUrl = {
+      newUrl: `${baseUrl}/${data.newUrl}`,
+    };
+
+    BarberEditUrlMutate.mutate(newUrl);
+  };
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     setShowToast(false);
@@ -138,27 +237,49 @@ function BarberRegisterContact() {
       data.cep = data.cep.replace('-', '');
     }
 
-    const user = {
-      celPhone: data.cellphone,
-      name: data.barberName,
-      telPhone: data.fixCellphone,
-      email: data.email,
-      address: {
-        address: data.address,
-        number: data.addressNumber,
-        complement: data.addressComplement,
-        postalCode: data.cep,
-        city: data.city,
-        neighborhood: data.neighborhood,
-      },
-    };
+    let user;
+
+    // verificando se está editando ou criando
+
+    if (barberHaveId) {
+      user = {
+        _id: barberHaveId,
+        celPhone: data.cellphone,
+        name: data.barberName,
+        telPhone: data.fixCellphone,
+        email: data.email,
+        address: {
+          address: data.address,
+          number: data.addressNumber,
+          complement: data.addressComplement,
+          postalCode: data.cep,
+          city: data.city,
+          neighborhood: data.neighborhood,
+        },
+      };
+    } else {
+      user = {
+        celPhone: data.cellphone,
+        name: data.barberName,
+        telPhone: data.fixCellphone,
+        email: data.email,
+        address: {
+          address: data.address,
+          number: data.addressNumber,
+          complement: data.addressComplement,
+          postalCode: data.cep,
+          city: data.city,
+          neighborhood: data.neighborhood,
+        },
+      };
+    }
 
     mutate(user);
   };
 
   // get all que pega as informações de uma barbearia criada
   function barberInfo() {
-    if (data.ownerId) {
+    if (data._id) {
       //   setando os valores do form para edição
       setValue('barberName', data.name);
       setValue('cellphone', data.celPhone);
@@ -171,7 +292,8 @@ function BarberRegisterContact() {
       setValue('addressComplement', data.address.complement);
       setValue('addressNumber', data.address.number);
       setValue('city', data.address.city);
-
+      setBarberHaveId(data._id);
+      setCurrentBarberUrl(data.barberUrl);
       // tem que forçar uma atualização no dom para funcionar o mask dos inputs
       forceUpdate();
     }
@@ -251,6 +373,12 @@ function BarberRegisterContact() {
     setFoundCep(false);
   }
 
+  function openEditUrlModal() {
+    setShowToast(false);
+    setIsOpenEditUrlModal(true);
+    BarberUrl.setValue('newUrl', getBarberName()[1]);
+  }
+
   function copyToClipboard() {
     let copyText = document.querySelector("[data-copy='copyBarberLink']");
 
@@ -273,10 +401,13 @@ function BarberRegisterContact() {
 
   function getBarberName() {
     let barberName;
+    // quando quebrar no split gera uma array
+    // onde o index 0 é o domínio barber-hub.com
+    // onde o index 1 é /{nome da barbearia do cliente}
 
     if (data.ownerId) {
       const barberPart = barberUrl.split('/');
-      barberName = barberPart[1];
+      barberName = barberPart;
     } else {
       barberName = '';
     }
@@ -287,6 +418,10 @@ function BarberRegisterContact() {
   function handleDisabledInputNumber() {
     setDisableInputNumber(!disableInputNumber);
     setValue('addressNumber', null);
+  }
+
+  function handleCloseEditUrlModal() {
+    setIsOpenEditUrlModal(false);
   }
 
   return (
@@ -306,7 +441,7 @@ function BarberRegisterContact() {
           {barberUrl.length > 0 && (
             <Styled.ShowBarberLinkContainer>
               <Styled.SectionTitle>
-                {getBarberName()} aqui está o link da sua barbearia!
+                {getBarberName()[1]} aqui está o link da sua barbearia!
               </Styled.SectionTitle>
               <p>Acesso o link para acessar a página da sua babearia.</p>
               <Styled.ShowBarberLinkFlex>
@@ -314,6 +449,13 @@ function BarberRegisterContact() {
                 <a target="_blank" data-copy="copyBarberLink">
                   {barberUrl}
                 </a>
+                <Box ml="16px" mb="4px" cursor="pointer">
+                  <BsPencil
+                    size="20"
+                    color="#181b23"
+                    onClick={() => openEditUrlModal()}
+                  />
+                </Box>
                 <Box ml="16px" mb="4px" cursor="pointer">
                   <AiOutlineCopy
                     size="20"
@@ -532,6 +674,84 @@ function BarberRegisterContact() {
               />
             )}
           </form>
+          {/* modal para editar a utl */}
+          <Modal
+            onClose={handleCloseEditUrlModal}
+            isOpen={isOpenEditUrlModal}
+            isCentered
+          >
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader>
+                <Grid placeItems="center" mt="24px" gap="12px">
+                  <Styled.SectionTitle>Edite sua url</Styled.SectionTitle>
+                  <Styled.ModaEditUrlSubTitle>
+                    Insira a nova url, da sua barbearia no campo abaixo, caso
+                    essa url esteja disponível ela será o seu novo domínio
+                  </Styled.ModaEditUrlSubTitle>
+                </Grid>
+              </ModalHeader>
+              <ModalCloseButton />
+              <form
+                onSubmit={BarberUrl.handleSubmit(onSubmitEditBarberUrl)}
+                onClick={(e) => setShowToast(false)}
+              >
+                <ModalBody>
+                  <Grid
+                    gridTemplateColumns="auto 1fr"
+                    gap="8px"
+                    alignItems="center"
+                  >
+                    <Text
+                      fontSize="16px"
+                      fontFamily="Roboto"
+                      fontWeight="400"
+                      color="#000000"
+                    >
+                      {getBarberName()[0]}/
+                    </Text>
+                    <ChckraInput
+                      variant="flushed"
+                      placeholder="entre com sua url"
+                      color="#000000"
+                      focusBorderColor="#ffdd00"
+                      fontSize="16px"
+                      fontFamily="Roboto"
+                      fontWeight="400"
+                      {...BarberUrl.register('newUrl', { required: true })}
+                    />
+                    {BarberUrl.formState.errors.newUrl && (
+                      <Styled.ErrorMessage>
+                        <FaExclamationTriangle color="#d00000" />
+                        This field is required
+                      </Styled.ErrorMessage>
+                    )}
+                  </Grid>
+                </ModalBody>
+                <Grid placeItems="center" pb="20px">
+                  <Flex gap="20px">
+                    <Styled.ModalEditUrlButton
+                      onClick={() => {
+                        setIsOpenEditUrlModal(false);
+                        setShowToast(false);
+                      }}
+                    >
+                      Cancelar
+                    </Styled.ModalEditUrlButton>
+                    <Styled.ModalEditUrlButton
+                      disabled={BarberEditUrlMutate.isLoading}
+                    >
+                      {BarberEditUrlMutate.isLoading ? (
+                        <Spinner color="#181b23" />
+                      ) : (
+                        'Alterar'
+                      )}
+                    </Styled.ModalEditUrlButton>
+                  </Flex>
+                </Grid>
+              </form>
+            </ModalContent>
+          </Modal>
         </>
       )}
     </>

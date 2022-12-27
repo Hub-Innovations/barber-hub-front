@@ -262,3 +262,32 @@ export const ShowBarberLinkFlex = styled.div`
   align-items: flex-end;
   gap: 8px;
 `;
+
+export const ModaEditUrlSubTitle = styled.h2`
+  font-size: 14px;
+  color: #000000;
+  font-weight: 400;
+  font-family: 'Poppins', 'sans-serf';
+  text-align: center;
+  margin-top: 8px;
+`;
+
+export const ModalEditUrlButton = styled.button`
+  cursor: pointer;
+  font-family: 'Poppins', 'sans-serif';
+  font-size: 18px;
+  color: #000000;
+  font-weight: 600;
+  background-color: #ffdd00;
+  border-radius: 8px;
+  height: 44px;
+  transition: box-shadow 0.4s;
+  padding: 0 16px;
+  margin-top: 32px;
+  min-width: 120px;
+
+  :disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+`;
