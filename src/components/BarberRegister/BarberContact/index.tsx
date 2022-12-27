@@ -15,6 +15,7 @@ import { urlCep } from 'helpers/Form/helpCep/searchCepUrl';
 import axios from 'axios';
 import { BsArrowReturnRight, BsArrowRight } from 'react-icons/bs';
 import { AiOutlineCopy } from 'react-icons/ai';
+import { BarberShopAlreadyExists } from 'helpers/ErrorMessages/errorMessages';
 
 type Inputs = {
   cellphone: string;
@@ -94,11 +95,20 @@ function BarberRegisterContact() {
     },
     onError: (err: any) => {
       setShowToast(true);
-      setToast({
-        title: 'default',
-        status: 'error',
-        message: 'default',
-      });
+      if (err.response.data.message === BarberShopAlreadyExists) {
+        setToast({
+          title: 'Email já registrado',
+          status: 'error',
+          message:
+            'Este email já está em uso, por favor, registre outro email para a sua barbearia',
+        });
+      } else {
+        setToast({
+          title: 'default',
+          status: 'error',
+          message: 'default',
+        });
+      }
     },
     onSettled: () => {
       queryClient.invalidateQueries('create');
