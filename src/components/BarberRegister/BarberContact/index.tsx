@@ -731,7 +731,8 @@ function BarberRegisterContact() {
                 <Grid placeItems="center" pb="20px">
                   <Flex gap="20px">
                     <Styled.ModalEditUrlButton
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
                         setIsOpenEditUrlModal(false);
                         setShowToast(false);
                       }}
