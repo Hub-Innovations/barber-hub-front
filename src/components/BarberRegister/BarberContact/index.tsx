@@ -94,7 +94,6 @@ function BarberRegisterContact() {
       });
     },
     onError: (err: any) => {
-      console.log('%c⧭', 'color: #86bf60', err.response.data.message);
       setShowToast(true);
       if (err.response.data.message === BarberShopAlreadyExists) {
         setToast({
