@@ -180,6 +180,8 @@ function BarberRegisterContact() {
         status: 'success',
         message: 'A nova url da sua barbearia foi alterada e salva com sucesso',
       });
+      setIsOpenEditUrlModal(false);
+      setBarberUrl(data.barberUrl);
     },
     onError: (err: any) => {
       console.log('%c⧭', 'color: #9c66cc', err);
@@ -206,7 +208,8 @@ function BarberRegisterContact() {
   });
 
   const onSubmitEditBarberUrl: SubmitHandler<BarberUrl> = (data) => {
-    const baseUrl = 'barber-hub.com';
+    const baseUrl = 'barber-hub.com/barbearia';
+
     const newUrl = {
       newUrl: `${baseUrl}/${data.newUrl}`,
     };
@@ -376,7 +379,7 @@ function BarberRegisterContact() {
   function openEditUrlModal() {
     setShowToast(false);
     setIsOpenEditUrlModal(true);
-    BarberUrl.setValue('newUrl', getBarberName()[1]);
+    BarberUrl.setValue('newUrl', getBarberName()[2]);
   }
 
   function copyToClipboard() {
@@ -402,8 +405,6 @@ function BarberRegisterContact() {
   function getBarberName() {
     let barberName;
     // quando quebrar no split gera uma array
-    // onde o index 0 é o domínio barber-hub.com
-    // onde o index 1 é /{nome da barbearia do cliente}
 
     if (data.ownerId) {
       const barberPart = barberUrl.split('/');
@@ -441,7 +442,7 @@ function BarberRegisterContact() {
           {barberUrl.length > 0 && (
             <Styled.ShowBarberLinkContainer>
               <Styled.SectionTitle>
-                {getBarberName()[1]} aqui está o link da sua barbearia!
+                {getBarberName()[2]} aqui está o link da sua barbearia!
               </Styled.SectionTitle>
               <p>Acesso o link para acessar a página da sua babearia.</p>
               <Styled.ShowBarberLinkFlex>
@@ -708,7 +709,7 @@ function BarberRegisterContact() {
                       fontWeight="400"
                       color="#000000"
                     >
-                      {getBarberName()[0]}/
+                      {`${getBarberName()[0]}/${getBarberName()[1]}`}/
                     </Text>
                     <ChckraInput
                       variant="flushed"
