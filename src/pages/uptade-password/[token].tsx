@@ -20,8 +20,9 @@ import ToastALert from '../../components/Alerts/ToastAlert';
 import SuccessModal from '../../components/Modals/SuccessModal';
 
 type Inputs = {
-  password: string;
+  password?: string;
   confirmPassword?: string;
+  newPassword?: string;
 };
 
 interface ToastProps {
@@ -30,14 +31,24 @@ interface ToastProps {
   status: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
 }
 
-const createEmployee = async (data: Inputs) => {
-  const { data: response } = await http.post('/auth/register', data);
+const changePassword = async (data: Inputs) => {
+  const token = localStorage.getItem('changePasswordToken');
+
+  const { data: response } = await http.post(
+    '/auth/forgot-password/check',
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response;
 };
 
 function UpdatePassword() {
   const router = useRouter();
-  const token = router.query.token;
+  const urlToken = router.query.token;
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [disabledConfirmPassword, setDisabledConfirmPassword] =
@@ -48,7 +59,7 @@ function UpdatePassword() {
     status: 'error',
   });
   const [showToast, setShowToast] = React.useState(false);
-  const [openSuccessDialog, setOpenDialog] = React.useState(false);
+  const [openSuccessDialog, setOpenSuccessDialog] = React.useState(false);
 
   const {
     register,
@@ -58,11 +69,11 @@ function UpdatePassword() {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const { mutate, isLoading } = useMutation(createEmployee, {
+  const { mutate, isLoading } = useMutation(changePassword, {
     onSuccess: (data) => {
-      console.log('%c⧭', 'color: #ff0000', data);
-      setOpenDialog(true);
+      setOpenSuccessDialog(!openSuccessDialog);
       setShowToast(false);
+      localStorage.removeItem('changePasswordToken');
     },
     onError: (err: any) => {
       // toast de error
@@ -80,7 +91,7 @@ function UpdatePassword() {
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     const user = {
-      password: data.password,
+      newPassword: data.password,
     };
     mutate(user);
   };
@@ -98,6 +109,12 @@ function UpdatePassword() {
   function goToLogin() {
     Router.push('/login');
   }
+
+  React.useEffect(() => {
+    let stringToken = String(urlToken);
+
+    localStorage.setItem('changePasswordToken', stringToken);
+  }, [urlToken]);
 
   return (
     <>

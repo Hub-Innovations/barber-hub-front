@@ -28,7 +28,7 @@ interface ToastProps {
 }
 
 const createEmployee = async (data: Inputs) => {
-  const { data: response } = await http.post('/auth/forget-password', data);
+  const { data: response } = await http.post('/auth/forgot-password', data);
   return response;
 };
 
@@ -38,13 +38,12 @@ function Forget() {
   const [toast, setToast] = React.useState<ToastProps>({
     status: 'error',
   });
-  const [openSuccessDialog, setOpenDialog] = React.useState(false);
+  const [openSuccessDialog, setOpenSuccessDialog] = React.useState(false);
   const [showToast, setShowToast] = React.useState(false);
 
   const { mutate, isLoading } = useMutation(createEmployee, {
     onSuccess: (data) => {
-      console.log('%c⧭', 'color: #ff0000', data);
-      setOpenDialog(true);
+      setOpenSuccessDialog(!openSuccessDialog);
       setShowToast(false);
     },
     onError: (err: any) => {
