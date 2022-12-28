@@ -26,6 +26,10 @@ export default function App({ Component, pageProps }: AppProps) {
     if (unauthorized === 'true') {
       setShowUnauthorizedToast(true);
       localStorage.removeItem('unauthorized');
+
+      setTimeout(() => {
+        setShowUnauthorizedToast(false);
+      }, 100);
     }
   }, []);
 
