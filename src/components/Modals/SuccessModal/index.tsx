@@ -42,6 +42,10 @@ function SuccessModal({
     setIsOpem(false);
   }
 
+  React.useEffect(() => {
+    setIsOpem(open);
+  }, [open]);
+
   return (
     <>
       <Modal

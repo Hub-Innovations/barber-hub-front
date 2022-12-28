@@ -37,6 +37,7 @@ import {
   BarberShopUrlAlreadyExists,
 } from 'helpers/ErrorMessages/errorMessages';
 import { Input as ChckraInput } from '@chakra-ui/react';
+import useMedia from 'hooks/useMedia';
 
 type Inputs = {
   _id: string | null;
@@ -125,6 +126,7 @@ function BarberRegisterContact() {
   const [barberHaveId, setBarberHaveId] = React.useState(null);
   const [isOpenEditUrlModal, setIsOpenEditUrlModal] = React.useState(false);
   const [currentBarberUrl, setCurrentBarberUrl] = React.useState('');
+  const mobile = useMedia('(max-width: 769px)');
 
   const {
     register,
@@ -680,6 +682,7 @@ function BarberRegisterContact() {
             onClose={handleCloseEditUrlModal}
             isOpen={isOpenEditUrlModal}
             isCentered
+            size={mobile ? 'xs' : 'lg'}
           >
             <ModalOverlay />
             <ModalContent>

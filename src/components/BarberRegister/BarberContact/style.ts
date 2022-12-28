@@ -286,6 +286,10 @@ export const ModalEditUrlButton = styled.button`
   margin-top: 32px;
   min-width: 120px;
 
+  :hover {
+    box-shadow: 0 0 0 4px #ffdd00;
+  }
+
   :disabled {
     opacity: 0.6;
     cursor: wait;
