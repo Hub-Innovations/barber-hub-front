@@ -5,9 +5,15 @@ interface ToastProps {
   messageTitle?: string;
   messageText?: string;
   toastStatus: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
+  duration?: number;
 }
 
-function ToastALert({ messageTitle, messageText, toastStatus }: ToastProps) {
+function ToastALert({
+  messageTitle,
+  messageText,
+  toastStatus,
+  duration,
+}: ToastProps) {
   const toast = useToast();
 
   // mensagem padrão de erro para toda a plataforma
@@ -34,7 +40,7 @@ function ToastALert({ messageTitle, messageText, toastStatus }: ToastProps) {
         title: messageTitle,
         description: messageText,
         status: toastStatus,
-        duration: 6000,
+        duration: duration ? duration : 4000,
         position: 'top-right',
         isClosable: true,
       })}
