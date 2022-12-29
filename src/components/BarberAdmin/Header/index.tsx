@@ -16,9 +16,15 @@ import {
   PopoverAnchor,
 } from '@chakra-ui/react';
 import useMedia from '../../../hooks/useMedia';
+import Router from 'next/router';
 
 function AdminHeader() {
   const mobile = useMedia('(max-width: 769px)');
+
+  function handleLogout() {
+    localStorage.removeItem('token');
+    Router.push('/login');
+  }
 
   return (
     <Styled.Header>
@@ -47,7 +53,7 @@ function AdminHeader() {
                       Configurações
                     </Link>
                   </li>
-                  <li>
+                  <li onClick={handleLogout}>
                     <FaSignInAlt size="16" color="#000000" />
                     <p>Logout</p>
                   </li>
