@@ -1,5 +1,6 @@
 import axios from 'axios';
 import ToastALert from 'components/Alerts/ToastAlert';
+// import Router from 'next/router';
 
 export const http = axios.create({
   headers: { 'Content-Type': 'application/json' },
@@ -14,12 +15,6 @@ function getToken() {
   return localStorage.getItem('token');
 }
 
-// function setUnauthorizedErrorLocalStorage() {
-//   localStorage.setItem('unauthorized', 'true');
-
-//   localStorage.setItem('unauthorized', 'false');
-// }
-
 http.interceptors.response.use(
   (response) => {
     return response;
@@ -30,7 +25,9 @@ http.interceptors.response.use(
 
     if (errStatus === 401 && errMessage === 'Unauthorized') {
       window.location.href = '/login';
+      // Router.push('/login');
       localStorage.setItem('unauthorized', 'true');
+      localStorage.removeItem('token');
     }
     return Promise.reject(error);
   }

@@ -85,6 +85,18 @@ function Login() {
     mutate(user);
   };
 
+  function checkUserTokenIsValid() {
+    let token = localStorage.getItem('token');
+
+    if (token) {
+      Router.push('/profile');
+    }
+  }
+
+  React.useEffect(() => {
+    checkUserTokenIsValid();
+  }, []);
+
   return (
     <Styled.LoginBg>
       <LoginHeader register={true} />
