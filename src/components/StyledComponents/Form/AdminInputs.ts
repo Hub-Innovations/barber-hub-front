@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 export const Input = styled.input`
   background: #ffffff;
@@ -56,14 +56,15 @@ export const FormInputs = styled.div`
       height: 44px;
       display: block;
       padding: 8px;
-      display: none;
 
       @media (max-width: 600px) {
         height: 40px;
       }
     }
   }
-  input[class='mask'] {
+
+  input[class='mask'],
+  input {
     background: #ffffff;
     border: 2px solid #181b23;
     border-radius: 6px;
@@ -74,8 +75,6 @@ export const FormInputs = styled.div`
     width: 100%;
     height: 44px;
     display: block;
-    padding: 8px;
-    display: none;
 
     @media (max-width: 600px) {
       height: 40px;
@@ -97,4 +96,34 @@ export const FormInputs = styled.div`
       margin-top: 8px;
     }
   }
+`;
+
+export const AnimeErrorMessage = keyframes`
+  from {
+    opacity: 0;
+    transform: translate3d(-30px,0,0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0,0,0);
+  }
+`;
+
+interface ErroMessageProps {
+  inputMask?: boolean;
+}
+
+export const ErrorMessage = styled.p`
+  color: #d00000;
+  font-size: 14px;
+  font-weight: 400;
+  font-family: 'Roboto', 'sans-serif';
+  margin-top: 12px;
+  display: block;
+  animation: ${AnimeErrorMessage} 0.4s;
+  margin-bottom: ${(p: ErroMessageProps) => (p.inputMask ? '24px' : '0')};
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
 `;

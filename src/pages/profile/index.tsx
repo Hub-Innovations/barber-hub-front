@@ -11,6 +11,7 @@ import {
   TabPanel,
   Flex,
 } from '@chakra-ui/react';
+import BarberRegisterServices from 'components/BarberRegister/BarberServices';
 
 function AdminProfile() {
   return (
@@ -34,7 +35,9 @@ function AdminProfile() {
             <TabPanel>
               <BarberRegisterContact />
             </TabPanel>
-            <TabPanel>2</TabPanel>
+            <TabPanel>
+              <BarberRegisterServices />
+            </TabPanel>
             <TabPanel>3</TabPanel>
           </TabPanels>
         </Tabs>

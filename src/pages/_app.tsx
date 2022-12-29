@@ -42,6 +42,7 @@ export default function App({ Component, pageProps }: AppProps) {
             toastStatus="error"
             messageText="Você não possui autorização para essa requisição"
             messageTitle="Não autorizado"
+            duration={2000}
           />
         )}
         <ReactQueryDevtools initialIsOpen={false} />
