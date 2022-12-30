@@ -21,6 +21,7 @@ import {
   Flex,
   Spinner,
   CircularProgress,
+  Text,
 } from '@chakra-ui/react';
 import { formatToCurrency } from 'helpers/Currency/formatCurrency';
 import React, { useReducer } from 'react';
@@ -41,6 +42,7 @@ import { FaExclamationTriangle } from 'react-icons/fa';
 import { CurrencyInput, Currencies, Locales } from 'input-currency-react';
 import CurrencyFormat from 'react-currency-format';
 import ToastALert from 'components/Alerts/ToastAlert';
+import useMedia from 'hooks/useMedia';
 
 type Inputs = {
   price?: number | string;
@@ -100,6 +102,7 @@ function BarberRegisterServices() {
   const [serviceDelete, setServiceDelete] = React.useState(false);
   const [serviceToDelete, setServiceToDelete] =
     React.useState<ServicesProps | null>(null);
+  const mobile = useMedia('(max-width: 769px)');
 
   // para colocar o toast sempre pra false e não chamar duas vezes quando invalidar um query
   React.useEffect(() => {
@@ -385,7 +388,7 @@ function BarberRegisterServices() {
             onClose={handleCloseModalService}
             isOpen={isOpenBarberServicesModal}
             isCentered
-            size="lg"
+            size={mobile ? 'xs' : 'lg'}
           >
             <ModalOverlay />
             <ModalContent>
@@ -462,16 +465,30 @@ function BarberRegisterServices() {
             onClose={handleCloseDeleteServiceModal}
             isOpen={deleteServiceModal}
             isCentered
-            size="lg"
+            size={mobile ? 'xs' : 'lg'}
           >
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>
                 <Grid placeItems="center" mt="24px" gap="12px">
                   <BarberGeneralServices.SectionTitle>
-                    Tem certeza que deseja deletar esse o serviço:{' '}
-                    {serviceToDelete ? serviceToDelete.name : ''}?
+                    Deletar serviço
                   </BarberGeneralServices.SectionTitle>
+
+                  <Alert status="warning" borderRadius={'8px'} mt="12px">
+                    <AlertIcon />
+                    <Text
+                      fontFamily="Roboto"
+                      fontSize="18px"
+                      fontWeight="normal"
+                      color="#000000"
+                    >
+                      Tem certeza que deseja deletar o serviço:{' '}
+                      <Text fontWeight="bold" display="inline">
+                        {serviceToDelete ? serviceToDelete.name : ''}?
+                      </Text>
+                    </Text>
+                  </Alert>
                 </Grid>
               </ModalHeader>
               <ModalCloseButton />
