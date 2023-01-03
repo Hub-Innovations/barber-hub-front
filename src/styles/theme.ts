@@ -63,3 +63,4 @@ export const theme = extendTheme({
 
 // red #d00000
 // blue #023e8a
+// yellow #ffdd00

@@ -21,13 +21,11 @@ http.interceptors.response.use(
   },
   async (error) => {
     const errStatus = error.response.data.statusCode;
-    const errMessage = error.response.data.message;
 
-    if (errStatus === 401 && errMessage === 'Unauthorized') {
+    if (errStatus === 401) {
       window.location.href = '/login';
-      // Router.push('/login');
-      localStorage.setItem('unauthorized', 'true');
       localStorage.removeItem('token');
+      localStorage.setItem('unauthorized', 'true');
     }
     return Promise.reject(error);
   }
