@@ -4,8 +4,22 @@ import parse from 'date-fns/parse';
 import startOfWeek from 'date-fns/startOfWeek';
 import getDay from 'date-fns/getDay';
 import ptBR from 'date-fns/locale/pt-BR';
-import { Box } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+} from '@chakra-ui/react';
 import useMedia from 'hooks/useMedia';
+import React from 'react';
+import { SectionTitle } from 'components/BarberRegister/BarberContact/style';
+import * as Styled from './style';
 
 const locales = {
   'pt-BR': ptBR,
@@ -19,8 +33,21 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
+interface dataModalEventPros {
+  title: string;
+}
+
 export const CalendarComponent = () => {
   const mobile = useMedia('(max-width: 769px)');
+  const [showModalEvent, setShowModalEvent] = React.useState(false);
+  const [dataToModalEvent, setDataToModalEvent] =
+    React.useState<dataModalEventPros>();
+
+  function handleShowEvent(e: any) {
+    console.log('%c⧭', 'color: #00258c', e);
+    setShowModalEvent(true);
+    setDataToModalEvent(e);
+  }
 
   const messages = {
     allDay: 'Dia Inteiro',
@@ -97,7 +124,30 @@ export const CalendarComponent = () => {
         startAccessor="start"
         endAccessor="end"
         style={{ height: 600 }}
+        onSelectEvent={(e) => handleShowEvent(e)}
       />
+      <Modal
+        size={mobile ? 'xs' : 'md'}
+        isOpen={showModalEvent}
+        onClose={() => setShowModalEvent(false)}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>
+            <SectionTitle>{dataToModalEvent?.title}</SectionTitle>
+          </ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            Conteúdo que vai vir do get pelo id, trazendo todas as informações
+            desse serviço...
+          </ModalBody>
+          <Styled.ModalEventButtonFlex>
+            <Styled.ModaEventButton>Fechar</Styled.ModaEventButton>
+            <Styled.ModaEventButton>Deletar</Styled.ModaEventButton>
+          </Styled.ModalEventButtonFlex>
+        </ModalContent>
+      </Modal>
     </Box>
   );
 };
