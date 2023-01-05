@@ -74,7 +74,8 @@ export const LoginGeneralForm = styled.div`
   }
 
   // falando diretamente com o input que tem o mask, para ter controle sobre os estilos do componente
-  input[name='barberCnpj'] {
+  input[name='documentNumber'],
+  input[name='cellphone'] {
     background: #181b23;
     border: 1px solid #ffdd00;
     border-radius: 6px;
@@ -89,19 +90,26 @@ export const LoginGeneralForm = styled.div`
     margin-top: 8px;
 
     @media (max-width: 600px) {
-      margin-top: 24px;
+      margin-top: 12px;
       height: 40px;
       font-size: 12px;
     }
   }
 
-  label[id='CNPJ'] {
+  label[id='CPF'],
+  label[id='CELLPHONE'] {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
     font-size: 18px;
     color: #ffffff;
     display: block;
     position: relative;
+
+    button[id='buttonTooltip'] {
+      margin-top: 0px;
+      background-color: transparent;
+      padding: 2px 4px;
+    }
 
     @media (max-width: 600px) {
       font-size: 16px;

@@ -15,20 +15,21 @@ import {
 import { FaInfoCircle } from 'react-icons/fa';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import Link from 'next/link';
-// import InputMask from 'react-input-mask';
+import InputMask from 'react-input-mask';
 import LoginHeader from '../../components/LoginHeader';
 import { useQueryClient, useMutation } from 'react-query';
 import { http } from '../../../api/http';
 import ToastALert from '../../components/Alerts/ToastAlert';
 import Router from 'next/router';
-import { regexpToEmail } from 'helpers/Form/regexp';
+import { regexpCleanCelPhoneNumber, regexpToEmail } from 'helpers/Form/regexp';
 
 type Inputs = {
   name: string;
-  // barberCnpj: string;
+  documentNumber: string;
   email: string;
   password: string;
   confirmPassword?: string;
+  cellphone?: string;
 };
 
 interface ToastProps {
@@ -82,11 +83,38 @@ function Register() {
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
+    // quebrando o número numa array item[0] é o dd o item[1] é o número
+    // em seguida limpando os caracteres especiais para mandar para o back
+    let cellPhoneNumberSplit = data.cellphone?.split(' ');
+    let phone = {};
+
+    // verificando se não o typeScript fica reclamando
+    //  montando o objeto phone (dd + numero)
+    if (cellPhoneNumberSplit) {
+      let areaCode = cellPhoneNumberSplit[0].replace(
+        regexpCleanCelPhoneNumber,
+        ''
+      );
+
+      let number = cellPhoneNumberSplit[1].replace(
+        regexpCleanCelPhoneNumber,
+        ''
+      );
+
+      phone = {
+        areaCode,
+        number,
+      };
+    }
+
     const user = {
       email: data.email,
       password: data.password,
       name: data.name,
+      documentNumber: data.documentNumber,
+      phone,
     };
+
     mutate(user);
   };
 
@@ -160,22 +188,53 @@ function Register() {
                   </ErrorMessage>
                 )}
               </Label>
-              {/* <label id="CNPJ">
-                CNPJ
+              <label id="CPF">
+                Cpf
                 <InputMask
-                  mask={'99.999.999/9999-99'}
+                  mask={'999.999.999-99'}
                   alwaysShowMask={false}
                   type={'text'}
-                  placeholder="00.000.000/0000-00"
-                  {...register('barberCnpj', { required: true })}
+                  placeholder="000.000.000-00"
+                  {...register('documentNumber', { required: true })}
                 />
               </label>
-              {errors.barberCnpj && (
+              {errors.documentNumber && (
                 <ErrorMessage inputMask={true}>
                   <FaExclamationTriangle />
                   This field is required
                 </ErrorMessage>
-              )} */}
+              )}
+              <label id="CELLPHONE">
+                Celular
+                <Tooltip
+                  label="Celular com dd"
+                  placement="right-end"
+                  bg="#495057"
+                  color="#f1f1f1"
+                  fontFamily="Poppins, sans-serif"
+                  fontSize="14px"
+                  fontWeight="600"
+                  letterSpacing="0.015rem"
+                  closeOnClick={false}
+                >
+                  <button type="button" id="buttonTooltip">
+                    <FaInfoCircle color="#ffdd00" size="16" />
+                  </button>
+                </Tooltip>
+                <InputMask
+                  mask={'(99) 99999-9999'}
+                  alwaysShowMask={false}
+                  type={'tel'}
+                  placeholder="(99) 99999-9999"
+                  {...register('cellphone', { required: true })}
+                />
+              </label>
+              {errors.cellphone && (
+                <ErrorMessage inputMask={true}>
+                  <FaExclamationTriangle color="#ffdd00" />
+                  This field is required
+                </ErrorMessage>
+              )}
               <Label onChange={(e) => handleCheckWritePassword(e)}>
                 Senha
                 <Tooltip
