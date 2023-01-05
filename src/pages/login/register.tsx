@@ -115,8 +115,7 @@ function Register() {
       phone,
     };
 
-    console.log('%c⧭', 'color: #e5de73', user);
-    // mutate(user);
+    mutate(user);
   };
 
   function handleCheckWritePassword(e: any) {
