@@ -17,6 +17,7 @@ import { useQueryClient, useMutation } from 'react-query';
 import { http } from '../../../api/http';
 import ToastALert from '../../components/Alerts/ToastAlert';
 import Router from 'next/router';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const createEmployee = async (data: Inputs) => {
   const { data: response } = await http.post('/auth/login', data);
@@ -38,11 +39,12 @@ function Login() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [showLoginRegister, setShowLoginRegister] = React.useState(false);
   const queryClient = useQueryClient();
+  const [captchaCode, setCaptchaCode] = React.useState<string | null>(null);
   const [toast, setToast] = React.useState<ToastProps>({
     status: 'error',
   });
   const [showToast, setShowToast] = React.useState(false);
-
+  const recaptchaRef = React.createRef<any>();
   const {
     register,
     handleSubmit,
@@ -82,7 +84,25 @@ function Login() {
     const user = {
       ...data,
     };
-    mutate(user);
+    if (!captchaCode) {
+      setShowToast(true);
+      setToast({
+        title: 'Um erro aconteceu',
+        message: 'Por favor, verifique o Captcha',
+        status: 'error',
+      });
+    } else {
+      mutate(user);
+    }
+  };
+
+  const onReCAPTCHAChange = (captchaCode: any) => {
+    // If the reCAPTCHA code is null or undefined indicating that
+    // the reCAPTCHA was expired then return early
+    if (!captchaCode) {
+      return;
+    }
+    setCaptchaCode(captchaCode);
   };
 
   function checkUserTokenIsValid() {
@@ -102,7 +122,7 @@ function Login() {
       <LoginHeader register={true} />
       <Styled.LoginGeneralContainerAlignCenter>
         <Styled.LoginGeneralContainer>
-          <Image src={BarberLogo} alt="Barber logo" />
+          <Image src={BarberLogo} alt='Barber logo' />
           <Styled.LoginGeneralForm>
             {!showLoginRegister && (
               <form
@@ -112,7 +132,7 @@ function Login() {
                 <Label>
                   Email
                   <Input
-                    type="email"
+                    type='email'
                     {...register('email', { required: true })}
                   />
                   {errors.email && (
@@ -139,13 +159,33 @@ function Login() {
                     </ErrorMessage>
                   )}
                 </Label>
-                <LoginButton loading={isLoading} text="Entrar" type="submit" />
+                <Styled.RecaptchaContainer>
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    size='normal'
+                    sitekey={
+                      process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+                        ? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY
+                        : ''
+                    }
+                    onChange={onReCAPTCHAChange}
+                  />
+                </Styled.RecaptchaContainer>
+                <Styled.SubmitButtonContainer>
+                  <LoginButton
+                    loading={isLoading}
+                    text='Entrar'
+                    type='submit'
+                    disabled={!captchaCode}
+                  />
+                </Styled.SubmitButtonContainer>
               </form>
             )}
           </Styled.LoginGeneralForm>
+
           <Styled.LinkToOtherRoutesLoginFlex>
-            <Link href="login/register">Criar cadastro</Link>
-            <Link href="login/forget">Perdeu a senha?</Link>
+            <Link href='login/register'>Criar cadastro</Link>
+            <Link href='login/forget'>Perdeu a senha?</Link>
           </Styled.LinkToOtherRoutesLoginFlex>
         </Styled.LoginGeneralContainer>
       </Styled.LoginGeneralContainerAlignCenter>

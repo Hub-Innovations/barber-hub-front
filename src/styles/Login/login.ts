@@ -246,3 +246,9 @@ export const HaveRegisterText = styled.p`
     text-decoration: underline;
   }
 `;
+
+export const RecaptchaContainer = styled.div`
+  margin: 10px 0;
+`;
+
+export const SubmitButtonContainer = styled.div``;
