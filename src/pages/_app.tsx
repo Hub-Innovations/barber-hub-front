@@ -6,6 +6,7 @@ import React from 'react';
 import { theme } from '../styles/theme';
 import ToastALert from 'components/Alerts/ToastAlert';
 import 'styles/BigCalendar/style.css';
+import 'styles/DatePicker/style.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   // const [queryClient] = React.useState(() => new QueryClient());

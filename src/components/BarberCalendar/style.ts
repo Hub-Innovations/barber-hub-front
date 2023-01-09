@@ -28,3 +28,23 @@ export const ModalEventButtonFlex = styled.div`
   gap: 20px;
   padding-bottom: 20px;
 `;
+
+export const CalendarButtonAddEvent = styled.button`
+  margin-top: 24px;
+  cursor: pointer;
+  display: block;
+  font-size: 16px;
+  color: #000000;
+  font-weight: 600;
+  font-family: 'Poppins', 'sans-serif';
+  border-radius: 8px;
+  background: #ffdd00;
+  padding: 8px;
+  transition: 0.4s;
+  min-width: 220px;
+  min-height: 44px;
+
+  :hover {
+    box-shadow: 0 0 0 2px #ffdd00;
+  }
+`;
