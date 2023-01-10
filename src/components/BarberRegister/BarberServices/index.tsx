@@ -39,37 +39,17 @@ import {
   Label,
 } from 'components/StyledComponents/Form/AdminInputs';
 import { FaExclamationTriangle } from 'react-icons/fa';
-import { CurrencyInput, Currencies, Locales } from 'input-currency-react';
 import CurrencyFormat from 'react-currency-format';
 import ToastALert from 'components/Alerts/ToastAlert';
 import useMedia from 'hooks/useMedia';
+import { useAddService } from './api/usePostServices';
+import { useDeleteService } from './api/useDeleteService';
+import { useUpdateService } from './api/useUpdateService';
+import { useGetBarberServices } from './api/useGetServices';
 
 type Inputs = {
   price?: number | string;
   name: string;
-};
-
-const getBarberServices = async () => {
-  const token = localStorage.getItem('token');
-
-  const { data } = await http.get('/barberservice', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  return data;
-};
-
-const addService = async (data: any) => {
-  const token = localStorage.getItem('token');
-
-  const { data: response } = await http.put('/barberservice', data, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return response;
 };
 
 interface ToastProps {
@@ -82,17 +62,18 @@ interface ServicesProps {
   barberId?: string;
   name?: string;
   price?: number;
-  _id?: string;
+  _id: string;
 }
 
 function BarberRegisterServices() {
-  const getBarberServicesItems = useQuery('getBarber', getBarberServices);
+  const getBarberServicesItems = useGetBarberServices();
   const [isOpenBarberServicesModal, setIsOpenBarberServicesModal] =
     React.useState(false);
   const [checkForm, setCheckForm] = React.useState(true);
   const [price, setPrice] = React.useState(0.0);
   const [editService, setEditService] = React.useState<Boolean>(false);
-  const [serviceToEdit, setServiceToEdit] = React.useState<Object | null>(null);
+  const [serviceToEdit, setServiceToEdit] =
+    React.useState<ServicesProps | null>(null);
   const queryClient = useQueryClient();
   const [showToast, setShowToast] = React.useState(false);
   const [toast, setToast] = React.useState<ToastProps>({
@@ -103,6 +84,7 @@ function BarberRegisterServices() {
   const [serviceToDelete, setServiceToDelete] =
     React.useState<ServicesProps | null>(null);
   const mobile = useMedia('(max-width: 769px)');
+  const [btnLoading, setBtnLoading] = React.useState<boolean>(false);
 
   // para colocar o toast sempre pra false e não chamar duas vezes quando invalidar um query
   React.useEffect(() => {
@@ -125,31 +107,9 @@ function BarberRegisterServices() {
     setIsOpenBarberServicesModal(false);
   }
 
-  const { mutate, isLoading } = useMutation(addService, {
-    onSuccess: (data) => {
-      console.log('%c⧭', 'color: #7f7700', 'chamei no delete');
-      setShowToast(true);
-      setToast({
-        title: 'default',
-        status: 'success',
-        message: 'default',
-      });
-      setIsOpenBarberServicesModal(false);
-      setDeleteServiceModal(false);
-      queryClient.invalidateQueries('getBarber');
-    },
-    onError: (err: any) => {
-      setShowToast(true);
-      setToast({
-        title: 'default',
-        status: 'error',
-        message: 'default',
-      });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries('create');
-    },
-  });
+  const addServiceMutation = useAddService();
+  const deleteServiceMutation = useDeleteService();
+  const updateServiceMutation = useUpdateService();
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (!serviceDelete) {
@@ -158,71 +118,30 @@ function BarberRegisterServices() {
         let barberService;
 
         if (!editService) {
-          barberService = [
-            ...getBarberServicesItems.data,
-            {
-              price: data.price,
-              name: data.name,
-            },
-          ];
+          addServiceMutation.mutate({
+            price: data.price,
+            name: data.name,
+          });
         }
 
         if (editService) {
           if (serviceToEdit) {
-            // pega o index do item para editar
-            // limpa a array para enviar pro back
-            // clone a array original
-            // edita exatamente na posição index
-
-            let indexServiceToEdit =
-              getBarberServicesItems.data.indexOf(serviceToEdit);
-
-            let newArrayService = getBarberServicesItems.data.map(
-              (item: any) => {
-                return {
-                  name: item.name,
-                  price: item.price,
-                };
-              }
-            );
-
-            newArrayService[indexServiceToEdit] = {
+            updateServiceMutation.mutate({
+              _id: serviceToEdit._id,
               name: data.name,
               price: data.price,
-            };
-
-            barberService = newArrayService;
+            });
           }
         }
-
-        mutate({
-          barberService,
-        });
       } else {
         setCheckForm(false);
       }
     }
 
     if (serviceDelete) {
-      let barberService;
-
-      let indexServiceToDelete =
-        getBarberServicesItems.data.indexOf(serviceToDelete);
-
-      let newArrayService = getBarberServicesItems.data.map((item: any) => {
-        return {
-          name: item.name,
-          price: item.price,
-        };
-      });
-
-      newArrayService.splice(indexServiceToDelete, 1);
-
-      barberService = newArrayService;
-
-      mutate({
-        barberService,
-      });
+      if (serviceToDelete) {
+        deleteServiceMutation.mutate(serviceToDelete._id);
+      }
     }
   };
 
@@ -275,6 +194,80 @@ function BarberRegisterServices() {
 
     return text;
   }
+
+  function showSuccessMessage() {
+    setShowToast(true);
+    setToast({
+      title: 'default',
+      status: 'success',
+      message: 'default',
+    });
+    setIsOpenBarberServicesModal(false);
+    setDeleteServiceModal(false);
+  }
+
+  function showErrorMessage() {
+    setShowToast(true);
+    setToast({
+      title: 'default',
+      status: 'error',
+      message: 'default',
+    });
+  }
+
+  React.useEffect(() => {
+    if (
+      addServiceMutation.isLoading ||
+      deleteServiceMutation.isLoading ||
+      updateServiceMutation.isLoading
+    ) {
+      setBtnLoading(true);
+    } else {
+      setBtnLoading(false);
+    }
+  }, [
+    addServiceMutation.isLoading,
+    deleteServiceMutation.isLoading,
+    updateServiceMutation.isLoading,
+  ]);
+
+  //efeitos para sucesso das ações de add - delete- edit - serviço
+  React.useEffect(() => {
+    if (addServiceMutation.isSuccess) {
+      showSuccessMessage();
+    }
+  }, [addServiceMutation.isSuccess]);
+
+  React.useEffect(() => {
+    if (deleteServiceMutation.isSuccess) {
+      showSuccessMessage();
+    }
+  }, [deleteServiceMutation.isSuccess]);
+
+  React.useEffect(() => {
+    if (updateServiceMutation.isSuccess) {
+      showSuccessMessage();
+    }
+  }, [updateServiceMutation.isSuccess]);
+
+  //efeitos para erro das ações de add - delete- edit - serviço
+  React.useEffect(() => {
+    if (addServiceMutation.isError) {
+      showErrorMessage();
+    }
+  }, [addServiceMutation.isError]);
+
+  React.useEffect(() => {
+    if (deleteServiceMutation.isError) {
+      showErrorMessage();
+    }
+  }, [deleteServiceMutation.isError]);
+
+  React.useEffect(() => {
+    if (updateServiceMutation.isError) {
+      showErrorMessage();
+    }
+  }, [updateServiceMutation.isError]);
 
   return (
     <>
@@ -450,8 +443,8 @@ function BarberRegisterServices() {
                   >
                     Fechar
                   </BarberGeneralServices.ModalButton>
-                  <BarberGeneralServices.ModalButton disabled={isLoading}>
-                    {isLoading ? (
+                  <BarberGeneralServices.ModalButton disabled={btnLoading}>
+                    {btnLoading ? (
                       <Spinner color="#181b23" />
                     ) : (
                       defineModalButtonText()
@@ -507,8 +500,8 @@ function BarberRegisterServices() {
                   >
                     Cancelar
                   </BarberGeneralServices.ModalButton>
-                  <BarberGeneralServices.ModalButton disabled={isLoading}>
-                    {isLoading ? <Spinner color="#181b23" /> : 'Deletar'}
+                  <BarberGeneralServices.ModalButton disabled={btnLoading}>
+                    {btnLoading ? <Spinner color="#181b23" /> : 'Deletar'}
                   </BarberGeneralServices.ModalButton>
                 </Flex>
               </form>

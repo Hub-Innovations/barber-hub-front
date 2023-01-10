@@ -81,7 +81,8 @@ export const FormInputs = styled.div`
     }
   }
 
-  label[id='class'] {
+  label[id='class'],
+  label[id='mask'] {
     font-family: 'Poppins', sans-serif;
     font-weight: 400;
     font-size: 18px;
@@ -126,4 +127,28 @@ export const ErrorMessage = styled.p`
   display: flex;
   align-items: center;
   gap: 8px;
+`;
+
+export const CheckBox = styled.input`
+  position: relative;
+  display: inline-block;
+  border: 1px solid #ccc;
+  width: 16px;
+  height: 16px;
+  background: #eee;
+  cursor: pointer;
+`;
+
+export const CheckBoxFlex = styled.div`
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+
+  p {
+    font-size: 12px;
+    color: #000000;
+    font-family: 'Poppins', 'sans-serif';
+    font-weight: 400;
+  }
 `;
