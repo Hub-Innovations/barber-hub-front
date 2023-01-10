@@ -20,6 +20,7 @@
   "exclude": ["node_modules"],
   "paths": {
     "@pages/*": ["/*pages"],
-    "@components/*": ["/*components"]
+    "@components/*": ["/*components"],
+    "@http/*": ["/*api"]
   }
 }
