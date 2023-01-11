@@ -18,8 +18,8 @@ import {
   ModalOverlay,
   Spinner,
   Text,
+  useToast,
 } from '@chakra-ui/react';
-import ToastALert from 'components/Alerts/ToastAlert';
 import { regexpCleanCelPhoneNumber, regexpToEmail } from 'helpers/Form/regexp';
 import InputMask from 'react-input-mask';
 import { onlyNumber } from 'helpers/Form/onlyNumber';
@@ -38,6 +38,14 @@ import {
 } from 'helpers/ErrorMessages/errorMessages';
 import { Input as ChckraInput } from '@chakra-ui/react';
 import useMedia from 'hooks/useMedia';
+import {
+  errorDefaultToast,
+  successDefaultToast,
+} from 'helpers/Toast/Messages/Default';
+import {
+  erroCustomizableToast,
+  successCustomizableToast,
+} from 'helpers/Toast/Messages/Customizable';
 
 type Inputs = {
   _id: string | null;
@@ -104,19 +112,9 @@ const editBarberUrl = async (data: any) => {
   return response;
 };
 
-interface ToastProps {
-  title?: string;
-  message?: string;
-  status: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
-}
-
 function BarberRegisterContact() {
   const queryClient = useQueryClient();
-  const [showToast, setShowToast] = React.useState(false);
   const [checkEmail, setCheckEmail] = React.useState(true);
-  const [toast, setToast] = React.useState<ToastProps>({
-    status: 'error',
-  });
   const [disableInputNumber, setDisableInputNumber] = React.useState(false);
   const [foundCep, setFoundCep] = React.useState(true);
   const [writeCep, setWriteCep] = React.useState(false);
@@ -127,6 +125,7 @@ function BarberRegisterContact() {
   const [isOpenEditUrlModal, setIsOpenEditUrlModal] = React.useState(false);
   const [currentBarberUrl, setCurrentBarberUrl] = React.useState('');
   const mobile = useMedia('(max-width: 769px)');
+  const toast = useToast();
 
   const {
     register,
@@ -143,28 +142,19 @@ function BarberRegisterContact() {
     barberHaveId ? editBarber : createBarber,
     {
       onSuccess: (data) => {
-        setShowToast(true);
-        setToast({
-          title: 'default',
-          status: 'success',
-          message: 'default',
-        });
+        toast({ status: 'success', ...successDefaultToast });
       },
       onError: (err: any) => {
-        setShowToast(true);
         if (err.response.data.message === BarberShopAlreadyExists) {
-          setToast({
-            title: 'Email já registrado',
+          toast({
             status: 'error',
-            message:
+            title: 'Email já registrado',
+            description:
               'Este email já está em uso, por favor, registre outro email para a sua barbearia',
+            ...erroCustomizableToast,
           });
         } else {
-          setToast({
-            title: 'default',
-            status: 'error',
-            message: 'default',
-          });
+          // toast({ status: 'error', ...errorDefaultToast });
         }
       },
       onSettled: () => {
@@ -175,33 +165,26 @@ function BarberRegisterContact() {
 
   const BarberEditUrlMutate = useMutation(editBarberUrl, {
     onSuccess: (data) => {
-      console.log('%c⧭', 'color: #ff0000', data);
-      setShowToast(true);
-      setToast({
-        title: 'Url alterada com sucesso',
+      toast({
         status: 'success',
-        message: 'A nova url da sua barbearia foi alterada e salva com sucesso',
+        title: 'Url alterada com sucesso',
+        description:
+          'A nova url da sua barbearia foi alterada e salva com sucesso',
+        ...successCustomizableToast,
       });
       setIsOpenEditUrlModal(false);
       setBarberUrl(data.barberUrl);
     },
     onError: (err: any) => {
-      console.log('%c⧭', 'color: #9c66cc', err);
       if (err.response.data.message === BarberShopUrlAlreadyExists) {
-        setShowToast(true);
-        setToast({
-          title: 'Url já cadastrada',
+        toast({
           status: 'error',
-          message:
-            'Já temos essa url cadastrada em nosso sistema, por favor tente outra',
+          title: 'Url já cadastrada',
+          description: 'Url já cadastrada',
+          ...erroCustomizableToast,
         });
       } else {
-        setShowToast(true);
-        setToast({
-          title: 'default',
-          status: 'error',
-          message: 'default',
-        });
+        // toast({ status: 'error', ...errorDefaultToast });
       }
     },
     onSettled: () => {
@@ -220,7 +203,6 @@ function BarberRegisterContact() {
   };
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    setShowToast(false);
     if (!data.addressNumber) {
       data.addressNumber = null;
     }
@@ -308,7 +290,6 @@ function BarberRegisterContact() {
   React.useEffect(() => {
     if (status === 'success') {
       barberInfo();
-      setShowToast(false);
     }
   }, [data]);
 
@@ -334,7 +315,6 @@ function BarberRegisterContact() {
 
     if (!writeCep) {
       setFoundCep(true);
-      setShowToast(false);
 
       if (value.includes('-')) {
         value = value.replace('-', '');
@@ -362,12 +342,7 @@ function BarberRegisterContact() {
           })
           .catch((err) => {
             setFoundCep(false);
-            setShowToast(true);
-            setToast({
-              title: 'Ocorreu um erro na busca do seu cep',
-              status: 'error',
-              message: 'Tente novamente ou entre em contato com o suporte',
-            });
+            // toast({ status: 'error', ...errorDefaultToast });
           });
       }
     }
@@ -379,7 +354,6 @@ function BarberRegisterContact() {
   }
 
   function openEditUrlModal() {
-    setShowToast(false);
     setIsOpenEditUrlModal(true);
     BarberUrl.setValue('newUrl', getBarberName()[2]);
   }
@@ -389,17 +363,14 @@ function BarberRegisterContact() {
 
     if (copyText) {
       navigator.clipboard.writeText(copyText.innerHTML).then(() => {
-        setShowToast(true);
-        setToast({
-          title: 'Copiado com sucesso!',
+        toast({
           status: 'success',
-          message: 'Link copiado com sucesso para o clip board',
+          title: 'Copiado com sucesso!',
+          description: 'Link copiado com sucesso para o clip board',
+          ...successCustomizableToast,
         });
 
         // importante setar o toast pra false
-        setTimeout(() => {
-          setShowToast(false);
-        }, 500);
       });
     }
   }
@@ -469,10 +440,7 @@ function BarberRegisterContact() {
               </Styled.ShowBarberLinkFlex>
             </Styled.ShowBarberLinkContainer>
           )}
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            onClick={(e) => setShowToast(false)}
-          >
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Styled.FormGrid>
               <Stack gap="20px">
                 <Styled.SectionTitle>Dados para contato</Styled.SectionTitle>
@@ -669,13 +637,6 @@ function BarberRegisterContact() {
                 {isLoading ? <Spinner color="#181b23" /> : 'Salvar'}
               </Styled.FormButton>
             </Styled.FormGrid>
-            {showToast && (
-              <ToastALert
-                toastStatus={toast.status}
-                messageText={toast.message}
-                messageTitle={toast.title}
-              />
-            )}
           </form>
           {/* modal para editar a utl */}
           <Modal
@@ -696,10 +657,7 @@ function BarberRegisterContact() {
                 </Grid>
               </ModalHeader>
               <ModalCloseButton />
-              <form
-                onSubmit={BarberUrl.handleSubmit(onSubmitEditBarberUrl)}
-                onClick={(e) => setShowToast(false)}
-              >
+              <form onSubmit={BarberUrl.handleSubmit(onSubmitEditBarberUrl)}>
                 <ModalBody>
                   <Grid
                     gridTemplateColumns="auto 1fr"
@@ -738,7 +696,6 @@ function BarberRegisterContact() {
                       onClick={(e) => {
                         e.preventDefault();
                         setIsOpenEditUrlModal(false);
-                        setShowToast(false);
                       }}
                     >
                       Cancelar

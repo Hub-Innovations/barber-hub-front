@@ -15,17 +15,12 @@ import { http } from '../../../api/http';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import LoginButton from '../../components/Form/LoginButton';
 import SuccessModal from '../../components/Modals/SuccessModal';
-import ToastALert from '../../components/Alerts/ToastAlert';
+import { useToast } from '@chakra-ui/react';
+import { errorDefaultToast } from 'helpers/Toast/Messages/Default';
 
 type Inputs = {
   email: string;
 };
-
-interface ToastProps {
-  title?: string;
-  message?: string;
-  status: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
-}
 
 const createEmployee = async (data: Inputs) => {
   const { data: response } = await http.post('/auth/forgot-password', data);
@@ -35,24 +30,15 @@ const createEmployee = async (data: Inputs) => {
 function Forget() {
   const queryClient = useQueryClient();
   const [checkEmail, setCheckEmail] = React.useState(true);
-  const [toast, setToast] = React.useState<ToastProps>({
-    status: 'error',
-  });
   const [openSuccessDialog, setOpenSuccessDialog] = React.useState(false);
-  const [showToast, setShowToast] = React.useState(false);
+  const toast = useToast();
 
   const { mutate, isLoading } = useMutation(createEmployee, {
     onSuccess: (data) => {
       setOpenSuccessDialog(!openSuccessDialog);
-      setShowToast(false);
     },
     onError: (err: any) => {
-      setShowToast(true);
-      setToast({
-        title: 'default',
-        message: 'default',
-        status: 'error',
-      });
+      toast({ status: 'error', ...errorDefaultToast });
     },
     onSettled: () => {
       queryClient.invalidateQueries('create');
@@ -101,10 +87,7 @@ function Forget() {
           <StyledLogin.LoginGeneralContainer small={true}>
             <Image src={BarberLogo} alt="Barber logo" />
             <StyledLogin.LoginGeneralForm>
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                onClick={(e) => setShowToast(false)}
-              >
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <Label
                   onBlur={(e) => handleCheckEmail(e)}
                   onChange={handleChangeCheckEmail}
@@ -133,13 +116,6 @@ function Forget() {
           </StyledLogin.LoginGeneralContainer>
         </StyledLogin.LoginGeneralContainerAlignCenter>
       </StyledLogin.LoginBg>
-      {showToast && (
-        <ToastALert
-          toastStatus={toast.status}
-          messageText={toast.message}
-          messageTitle={toast.title}
-        />
-      )}
       <SuccessModal
         open={openSuccessDialog}
         modalTitle="E-mail enviado com sucesso"

@@ -13,23 +13,17 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import LoginHeader from '../../components/LoginHeader';
 import { useQueryClient, useMutation } from 'react-query';
 import { http } from '../../../api/http';
-import { Tooltip, Button, Box, Text } from '@chakra-ui/react';
+import { Tooltip, Button, Box, Text, useToast } from '@chakra-ui/react';
 import { FaInfoCircle } from 'react-icons/fa';
 import { Alert, AlertIcon } from '@chakra-ui/react';
-import ToastALert from '../../components/Alerts/ToastAlert';
 import SuccessModal from '../../components/Modals/SuccessModal';
+import { errorDefaultToast } from 'helpers/Toast/Messages/Default';
 
 type Inputs = {
   password?: string;
   confirmPassword?: string;
   newPassword?: string;
 };
-
-interface ToastProps {
-  title?: string;
-  message?: string;
-  status: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
-}
 
 const changePassword = async (data: Inputs) => {
   const token = localStorage.getItem('changePasswordToken');
@@ -55,11 +49,8 @@ function UpdatePassword() {
     React.useState(true);
   const [samePassword, setSamePassword] = React.useState(true);
   const queryClient = useQueryClient();
-  const [toast, setToast] = React.useState<ToastProps>({
-    status: 'error',
-  });
-  const [showToast, setShowToast] = React.useState(false);
   const [openSuccessDialog, setOpenSuccessDialog] = React.useState(false);
+  const toast = useToast();
 
   const {
     register,
@@ -72,17 +63,10 @@ function UpdatePassword() {
   const { mutate, isLoading } = useMutation(changePassword, {
     onSuccess: (data) => {
       setOpenSuccessDialog(!openSuccessDialog);
-      setShowToast(false);
       localStorage.removeItem('changePasswordToken');
     },
     onError: (err: any) => {
-      // toast de error
-      setShowToast(true);
-      setToast({
-        title: 'default',
-        message: 'default',
-        status: 'error',
-      });
+      toast({ status: 'error', ...errorDefaultToast });
     },
     onSettled: () => {
       queryClient.invalidateQueries('create');
@@ -122,10 +106,7 @@ function UpdatePassword() {
         <StyledLogin.LoginGeneralContainerAlignCenter>
           <StyledLogin.LoginGeneralContainer small={true}>
             <StyledLogin.LoginGeneralForm>
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                onClick={(e) => setShowToast(false)}
-              >
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <Label onChange={(e) => handleCheckWritePassword(e)}>
                   Senha
                   <Tooltip
@@ -229,13 +210,6 @@ function UpdatePassword() {
                   type="submit"
                 />
               </form>
-              {showToast && (
-                <ToastALert
-                  toastStatus={toast.status}
-                  messageText={toast.message}
-                  messageTitle={toast.title}
-                />
-              )}
               <SuccessModal
                 open={openSuccessDialog}
                 modalTitle="Senha redefinida com sucesso"
