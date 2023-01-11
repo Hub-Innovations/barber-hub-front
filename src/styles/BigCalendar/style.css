@@ -920,3 +920,11 @@ button.rbc-active:active {
     grid-row: 3;
   }
 }
+
+/* .rbc-event {
+  margin-top: 8px;
+} */
+
+.rbc-row-content > .rbc-row + .rbc-row {
+  margin-top: 4px;
+}
