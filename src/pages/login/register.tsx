@@ -5,7 +5,7 @@ import BarberLogo from '../../assets/barber-logo.png';
 import * as StyledLogin from '../../styles/Login/login';
 import { FaExclamationTriangle, FaEye } from 'react-icons/fa';
 import LoginButton from '../../components/Form/LoginButton';
-import { Tooltip, Button } from '@chakra-ui/react';
+import { Tooltip, Button, useToast } from '@chakra-ui/react';
 import {
   Input,
   Label,
@@ -19,9 +19,9 @@ import InputMask from 'react-input-mask';
 import LoginHeader from '../../components/LoginHeader';
 import { useQueryClient, useMutation } from 'react-query';
 import { http } from '../../../api/http';
-import ToastALert from '../../components/Alerts/ToastAlert';
 import Router from 'next/router';
 import { regexpCleanCelPhoneNumber, regexpToEmail } from 'helpers/Form/regexp';
+import { errorDefaultToast } from 'helpers/Toast/Messages/Default';
 
 type Inputs = {
   name: string;
@@ -31,12 +31,6 @@ type Inputs = {
   confirmPassword?: string;
   cellphone?: string;
 };
-
-interface ToastProps {
-  title?: string;
-  message?: string;
-  status: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
-}
 
 const createEmployee = async (data: Inputs) => {
   const { data: response } = await http.post('/auth/register', data);
@@ -51,10 +45,7 @@ function Register() {
   const [samePassword, setSamePassword] = React.useState(true);
   const [checkEmail, setCheckEmail] = React.useState(true);
   const queryClient = useQueryClient();
-  const [toast, setToast] = React.useState<ToastProps>({
-    status: 'error',
-  });
-  const [showToast, setShowToast] = React.useState(false);
+  const toast = useToast();
 
   const {
     register,
@@ -67,15 +58,9 @@ function Register() {
     onSuccess: (data) => {
       localStorage.setItem('token', data.token);
       Router.push('/profile');
-      setShowToast(false);
     },
     onError: (err: any) => {
-      setShowToast(true);
-      setToast({
-        title: 'default',
-        message: 'default',
-        status: 'error',
-      });
+      toast({ status: 'error', ...errorDefaultToast });
     },
     onSettled: () => {
       queryClient.invalidateQueries('create');
@@ -152,10 +137,7 @@ function Register() {
         <StyledLogin.LoginGeneralContainer>
           <Image src={BarberLogo} alt="Barber logo" />
           <StyledLogin.LoginGeneralForm>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              onClick={(e) => setShowToast(false)}
-            >
+            <form onSubmit={handleSubmit(onSubmit)}>
               <Label>
                 Nome
                 <Input type="text" {...register('name', { required: true })} />
@@ -322,13 +304,6 @@ function Register() {
           </StyledLogin.LoginGeneralForm>
         </StyledLogin.LoginGeneralContainer>
       </StyledLogin.LoginGeneralContainerAlignCenter>
-      {showToast && (
-        <ToastALert
-          toastStatus={toast.status}
-          messageText={toast.message}
-          messageTitle={toast.title}
-        />
-      )}
     </StyledLogin.LoginBg>
   );
 }

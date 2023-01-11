@@ -22,6 +22,7 @@ import {
   Spinner,
   CircularProgress,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { formatToCurrency } from 'helpers/Currency/formatCurrency';
 import React, { useReducer } from 'react';
@@ -40,12 +41,15 @@ import {
 } from 'components/StyledComponents/Form/AdminInputs';
 import { FaExclamationTriangle } from 'react-icons/fa';
 import CurrencyFormat from 'react-currency-format';
-import ToastALert from 'components/Alerts/ToastAlert';
 import useMedia from 'hooks/useMedia';
 import { useAddService } from './api/usePostServices';
 import { useDeleteService } from './api/useDeleteService';
 import { useUpdateService } from './api/useUpdateService';
 import { useGetBarberServices } from './api/useGetServices';
+import {
+  errorDefaultToast,
+  successDefaultToast,
+} from 'helpers/Toast/Messages/Default';
 
 type Inputs = {
   price?: number | string;
@@ -75,23 +79,13 @@ function BarberRegisterServices() {
   const [serviceToEdit, setServiceToEdit] =
     React.useState<ServicesProps | null>(null);
   const queryClient = useQueryClient();
-  const [showToast, setShowToast] = React.useState(false);
-  const [toast, setToast] = React.useState<ToastProps>({
-    status: 'error',
-  });
   const [deleteServiceModal, setDeleteServiceModal] = React.useState(false);
   const [serviceDelete, setServiceDelete] = React.useState(false);
   const [serviceToDelete, setServiceToDelete] =
     React.useState<ServicesProps | null>(null);
   const mobile = useMedia('(max-width: 769px)');
   const [btnLoading, setBtnLoading] = React.useState<boolean>(false);
-
-  // para colocar o toast sempre pra false e não chamar duas vezes quando invalidar um query
-  React.useEffect(() => {
-    setTimeout(() => {
-      setShowToast(false);
-    }, 100);
-  }, [showToast]);
+  const toast = useToast();
 
   const {
     register,
@@ -195,25 +189,15 @@ function BarberRegisterServices() {
     return text;
   }
 
-  function showSuccessMessage() {
-    setShowToast(true);
-    setToast({
-      title: 'default',
-      status: 'success',
-      message: 'default',
-    });
+  const showSuccessMessage = React.useCallback(() => {
+    toast({ status: 'success', ...successDefaultToast });
     setIsOpenBarberServicesModal(false);
     setDeleteServiceModal(false);
-  }
+  }, [toast]);
 
-  function showErrorMessage() {
-    setShowToast(true);
-    setToast({
-      title: 'default',
-      status: 'error',
-      message: 'default',
-    });
-  }
+  const showErrorMessage = React.useCallback(() => {
+    toast({ status: 'error', ...errorDefaultToast });
+  }, [toast]);
 
   React.useEffect(() => {
     if (
@@ -236,38 +220,38 @@ function BarberRegisterServices() {
     if (addServiceMutation.isSuccess) {
       showSuccessMessage();
     }
-  }, [addServiceMutation.isSuccess]);
+  }, [addServiceMutation.isSuccess, showSuccessMessage]);
 
   React.useEffect(() => {
     if (deleteServiceMutation.isSuccess) {
       showSuccessMessage();
     }
-  }, [deleteServiceMutation.isSuccess]);
+  }, [deleteServiceMutation.isSuccess, showSuccessMessage]);
 
   React.useEffect(() => {
     if (updateServiceMutation.isSuccess) {
       showSuccessMessage();
     }
-  }, [updateServiceMutation.isSuccess]);
+  }, [updateServiceMutation.isSuccess, showSuccessMessage]);
 
   //efeitos para erro das ações de add - delete- edit - serviço
   React.useEffect(() => {
     if (addServiceMutation.isError) {
       showErrorMessage();
     }
-  }, [addServiceMutation.isError]);
+  }, [addServiceMutation.isError, showErrorMessage]);
 
   React.useEffect(() => {
     if (deleteServiceMutation.isError) {
       showErrorMessage();
     }
-  }, [deleteServiceMutation.isError]);
+  }, [deleteServiceMutation.isError, showErrorMessage]);
 
   React.useEffect(() => {
     if (updateServiceMutation.isError) {
       showErrorMessage();
     }
-  }, [updateServiceMutation.isError]);
+  }, [updateServiceMutation.isError, showErrorMessage]);
 
   return (
     <>
@@ -402,7 +386,6 @@ function BarberRegisterServices() {
                 onSubmit={handleSubmit(onSubmit)}
                 onClick={() => {
                   setCheckForm(true);
-                  setShowToast(false);
                 }}
               >
                 <ModalBody>
@@ -485,12 +468,7 @@ function BarberRegisterServices() {
                 </Grid>
               </ModalHeader>
               <ModalCloseButton />
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                onClick={() => {
-                  setShowToast(false);
-                }}
-              >
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <Flex justifyContent="center" gap="40px" pb="20px">
                   <BarberGeneralServices.ModalButton
                     onClick={(e) => {
@@ -508,13 +486,6 @@ function BarberRegisterServices() {
             </ModalContent>
           </Modal>
         </>
-      )}
-      {showToast && (
-        <ToastALert
-          toastStatus={toast.status}
-          messageText={toast.message}
-          messageTitle={toast.title}
-        />
       )}
     </>
   );

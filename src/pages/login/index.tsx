@@ -15,8 +15,10 @@ import Link from 'next/link';
 import LoginHeader from '../../components/LoginHeader';
 import { useQueryClient, useMutation } from 'react-query';
 import { http } from '../../../api/http';
-import ToastALert from '../../components/Alerts/ToastAlert';
 import Router from 'next/router';
+import { useToast } from '@chakra-ui/react';
+import { erroCustomizableToast } from 'helpers/Toast/Messages/Customizable';
+import { errorDefaultToast } from 'helpers/Toast/Messages/Default';
 
 const createEmployee = async (data: Inputs) => {
   const { data: response } = await http.post('/auth/login', data);
@@ -28,20 +30,11 @@ type Inputs = {
   password: string;
 };
 
-interface ToastProps {
-  title?: string;
-  message?: string;
-  status: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
-}
-
 function Login() {
   const [showPassword, setShowPassword] = React.useState(false);
   const [showLoginRegister, setShowLoginRegister] = React.useState(false);
   const queryClient = useQueryClient();
-  const [toast, setToast] = React.useState<ToastProps>({
-    status: 'error',
-  });
-  const [showToast, setShowToast] = React.useState(false);
+  const toast = useToast();
 
   const {
     register,
@@ -54,23 +47,17 @@ function Login() {
     onSuccess: (data) => {
       localStorage.setItem('token', data.token);
       Router.push('/profile');
-      setShowToast(false);
     },
     onError: (err: any) => {
       if (err.response.status === 400) {
-        setShowToast(true);
-        setToast({
-          title: 'Um erro aconteceu',
-          message: 'Credencias inválidas, por favor tente novamente.',
+        toast({
           status: 'error',
+          description: 'Credencias inválidas, por favor tente novamente.',
+          title: 'Um erro aconteceu',
+          ...erroCustomizableToast,
         });
       } else {
-        setShowToast(true);
-        setToast({
-          title: 'default',
-          status: 'error',
-          message: 'default',
-        });
+        toast({ status: 'error', ...errorDefaultToast });
       }
     },
     onSettled: () => {
@@ -105,10 +92,7 @@ function Login() {
           <Image src={BarberLogo} alt="Barber logo" />
           <Styled.LoginGeneralForm>
             {!showLoginRegister && (
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                onClick={(e) => setShowToast(false)}
-              >
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <Label>
                   Email
                   <Input
@@ -149,13 +133,6 @@ function Login() {
           </Styled.LinkToOtherRoutesLoginFlex>
         </Styled.LoginGeneralContainer>
       </Styled.LoginGeneralContainerAlignCenter>
-      {showToast && (
-        <ToastALert
-          toastStatus={toast.status}
-          messageText={toast.message}
-          messageTitle={toast.title}
-        />
-      )}
     </Styled.LoginBg>
   );
 }

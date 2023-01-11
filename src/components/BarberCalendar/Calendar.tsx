@@ -27,7 +27,9 @@ import {
   StatLabel,
   StatNumber,
   Text,
+  Toast,
   useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import useMedia from 'hooks/useMedia';
 import React, { CSSProperties } from 'react';
@@ -59,11 +61,11 @@ import {
 import { FaExclamationTriangle } from 'react-icons/fa';
 import { useGetBarberServices } from 'components/BarberRegister/BarberServices/api/useGetServices';
 import { useAddEvent } from './api/useNewEvent';
-import ToastALert from 'components/Alerts/ToastAlert';
 import SuccessModal from 'components/Modals/SuccessModal';
 import { useGetALlEvents } from './api/useGetAllEvents';
 import { useGetEvent } from './api/useGetEvent';
 import { formatToCurrency } from 'helpers/Currency/formatCurrency';
+import { errorDefaultToast } from 'helpers/Toast/Messages/Default';
 
 const locales = {
   'pt-BR': ptBR,
@@ -93,14 +95,6 @@ interface serviceProps {
   value: string;
 }
 
-interface ToastProps {
-  title?: string;
-  message?: string;
-  status: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
-}
-
-// tem que ser um state pois as options vai vir do back
-
 export const CalendarComponent = () => {
   const mobile = useMedia('(max-width: 769px)');
   const mobileM = useMedia('(max-width: 380px)');
@@ -119,10 +113,6 @@ export const CalendarComponent = () => {
   const [serviceAllDay, setServiceAllDay] = React.useState(false);
   const barberServices = useGetBarberServices();
   const [serviceOptions, setServiceOptions] = React.useState([]);
-  const [showToast, setShowToast] = React.useState(false);
-  const [toast, setToast] = React.useState<ToastProps>({
-    status: 'error',
-  });
   const [showAlertCheckForm, setShowAlertCheckForm] = React.useState(false);
   const [requiredServiceInputMessage, setRequiredServiceInputMessage] =
     React.useState(false);
@@ -134,6 +124,7 @@ export const CalendarComponent = () => {
   const [allEvents, setAllEvents] = React.useState([]);
   const [selectedServicesTotalPrice, setSelectedServicesTotalPrice] =
     React.useState(0);
+  const toast = useToast();
 
   const {
     register,
@@ -357,6 +348,7 @@ export const CalendarComponent = () => {
     setValue('email', '');
     setValue('documentNumber', '');
     setOnlinePayment('true');
+    setSelectedServicesTotalPrice(0);
   }
 
   interface ServiceOptionsProps {
@@ -392,14 +384,9 @@ export const CalendarComponent = () => {
   // na adição de um novo evento - erro
   React.useEffect(() => {
     if (useNewEventMutation.isError) {
-      setShowToast(true);
-      setToast({
-        title: 'default',
-        status: 'error',
-        message: 'default',
-      });
+      toast({ status: 'error', ...errorDefaultToast });
     }
-  }, [useNewEventMutation.isError]);
+  }, [useNewEventMutation.isError, toast]);
 
   // efeito para verificar os campos que não são required
   React.useEffect(() => {
@@ -434,13 +421,10 @@ export const CalendarComponent = () => {
 
   // verificando quando o get dos eventos der erro
   React.useEffect(() => {
-    setShowToast(true);
-    setToast({
-      title: 'default',
-      status: 'error',
-      message: 'default',
-    });
-  }, [useGetAllEventsMutation.isError]);
+    if (useGetAllEventsMutation.isError) {
+      toast({ status: 'error', ...errorDefaultToast });
+    }
+  }, [useGetAllEventsMutation.isError, toast]);
 
   // efeito para somar os valores total dos serviços escolhidos
   React.useEffect(() => {
@@ -490,7 +474,6 @@ export const CalendarComponent = () => {
             onClick={() => {
               setShowModalAddEvent(true);
               resetModalValues();
-              setShowToast(false);
               setAddEventSuccessModal(false);
             }}
           >
@@ -510,12 +493,7 @@ export const CalendarComponent = () => {
               </ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                <form
-                  onSubmit={handleSubmit(onSubmit)}
-                  onClick={() => {
-                    setShowToast(false);
-                  }}
-                >
+                <form onSubmit={handleSubmit(onSubmit)} onClick={() => {}}>
                   <Styled.AddEventFormGrid>
                     {/* items que no futuro serão todos obrigatórios */}
                     <div>

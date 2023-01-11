@@ -1,5 +1,4 @@
 import axios from 'axios';
-import ToastALert from 'components/Alerts/ToastAlert';
 // import Router from 'next/router';
 
 export const http = axios.create({
