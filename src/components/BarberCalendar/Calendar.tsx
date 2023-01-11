@@ -22,6 +22,10 @@ import {
   RadioGroup,
   Spinner,
   Stack,
+  Stat,
+  StatGroup,
+  StatLabel,
+  StatNumber,
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
@@ -58,6 +62,8 @@ import { useAddEvent } from './api/useNewEvent';
 import ToastALert from 'components/Alerts/ToastAlert';
 import SuccessModal from 'components/Modals/SuccessModal';
 import { useGetALlEvents } from './api/useGetAllEvents';
+import { useGetEvent } from './api/useGetEvent';
+import { formatToCurrency } from 'helpers/Currency/formatCurrency';
 
 const locales = {
   'pt-BR': ptBR,
@@ -124,7 +130,10 @@ export const CalendarComponent = () => {
   const [addEventSuccess, setAddEventSuccessModal] = React.useState(false);
   const useNewEventMutation = useAddEvent();
   const useGetAllEventsMutation = useGetALlEvents();
+  // const useGetEventMutation = useGetEvent();
   const [allEvents, setAllEvents] = React.useState([]);
+  const [selectedServicesTotalPrice, setSelectedServicesTotalPrice] =
+    React.useState(0);
 
   const {
     register,
@@ -207,6 +216,7 @@ export const CalendarComponent = () => {
   }
 
   function handleShowEvent(e: any) {
+    // useGetEventMutation.refetch(e._id);
     setShowModalEvent(true);
     setDataToModalEvent(e);
   }
@@ -339,7 +349,6 @@ export const CalendarComponent = () => {
   function handleCloseSuccessModal() {
     setAddEventSuccessModal(false);
     setShowModalAddEvent(false);
-    queryClient.invalidateQueries({ queryKey: ['getEvents'] });
   }
 
   function resetModalValues() {
@@ -353,6 +362,7 @@ export const CalendarComponent = () => {
   interface ServiceOptionsProps {
     name: string;
     _id: string;
+    price: number;
   }
 
   // pegando as options de serviços
@@ -363,6 +373,7 @@ export const CalendarComponent = () => {
           return {
             label: service.name,
             value: service._id,
+            price: service.price,
           };
         }
       );
@@ -431,6 +442,27 @@ export const CalendarComponent = () => {
     });
   }, [useGetAllEventsMutation.isError]);
 
+  // efeito para somar os valores total dos serviços escolhidos
+  React.useEffect(() => {
+    if (services.length) {
+      let servicesSelectedValues = services.map(
+        (service: ServiceOptionsProps) => {
+          return service.price;
+        }
+      );
+
+      const totalSum: number = servicesSelectedValues.reduce((sum, i) => {
+        return sum + i;
+      });
+
+      let formattedToTalSum = Number(totalSum.toFixed(2));
+
+      setSelectedServicesTotalPrice(formattedToTalSum);
+    } else {
+      setSelectedServicesTotalPrice(0);
+    }
+  }, [services, selectedServicesTotalPrice]);
+
   return (
     <>
       {useGetAllEventsMutation.isLoading ? (
@@ -452,6 +484,7 @@ export const CalendarComponent = () => {
             startAccessor="start"
             endAccessor="end"
             style={{ height: 600 }}
+            onSelectEvent={(e) => handleShowEvent(e)}
           />
           <Styled.CalendarButtonAddEvent
             onClick={() => {
@@ -486,6 +519,17 @@ export const CalendarComponent = () => {
                   <Styled.AddEventFormGrid>
                     {/* items que no futuro serão todos obrigatórios */}
                     <div>
+                      <Stat
+                        border="1px"
+                        borderColor="#cccccc"
+                        borderRadius="4px"
+                        padding="8px"
+                      >
+                        <StatLabel>Total dos serviços (R$)</StatLabel>
+                        <StatNumber>
+                          {formatToCurrency(selectedServicesTotalPrice)}
+                        </StatNumber>
+                      </Stat>
                       <Box mt="20px">
                         <Label>O pagamento será feito de forma online?</Label>
                         <RadioGroup
@@ -729,13 +773,6 @@ export const CalendarComponent = () => {
                     </Styled.ModaEventButton>
                   </Styled.ModalEventButtonFlex>
                 </form>
-                {showToast && (
-                  <ToastALert
-                    toastStatus={toast.status}
-                    messageText={toast.message}
-                    messageTitle={toast.title}
-                  />
-                )}
                 <SuccessModal
                   open={addEventSuccess}
                   modalTitle="Evento marcado com sucesso"

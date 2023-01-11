@@ -21,7 +21,7 @@ export const useAddEvent = () => {
     },
     {
       onSuccess: () => {
-        queryClient.invalidateQueries(['getBarber']);
+        queryClient.invalidateQueries(['getAllEvents']);
       },
     }
   );
