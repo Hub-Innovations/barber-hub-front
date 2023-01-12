@@ -20,7 +20,7 @@ import { useToast } from '@chakra-ui/react';
 import { erroCustomizableToast } from 'helpers/Toast/Messages/Customizable';
 import { errorDefaultToast } from 'helpers/Toast/Messages/Default';
 
-const createEmployee = async (data: Inputs) => {
+const userLogin = async (data: Inputs) => {
   const { data: response } = await http.post('/auth/login', data);
   return response;
 };
@@ -43,7 +43,7 @@ function Login() {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const { mutate, isLoading } = useMutation(createEmployee, {
+  const { mutate, isLoading } = useMutation(userLogin, {
     onSuccess: (data) => {
       localStorage.setItem('token', data.token);
       Router.push('/profile');

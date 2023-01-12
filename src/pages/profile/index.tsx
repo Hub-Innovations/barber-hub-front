@@ -21,7 +21,7 @@ function AdminProfile() {
       <Styled.ProfileContainer>
         <Tabs isFitted colorScheme="orange" variant="soft-rounded">
           <TabList>
-            <Tab onClick={(e) => console.log(e)}>
+            <Tab>
               <Styled.TabLabel>Contato</Styled.TabLabel>
             </Tab>
             <Tab>

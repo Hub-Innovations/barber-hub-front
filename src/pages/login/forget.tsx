@@ -22,7 +22,7 @@ type Inputs = {
   email: string;
 };
 
-const createEmployee = async (data: Inputs) => {
+const forgotPassword = async (data: Inputs) => {
   const { data: response } = await http.post('/auth/forgot-password', data);
   return response;
 };
@@ -33,7 +33,7 @@ function Forget() {
   const [openSuccessDialog, setOpenSuccessDialog] = React.useState(false);
   const toast = useToast();
 
-  const { mutate, isLoading } = useMutation(createEmployee, {
+  const { mutate, isLoading } = useMutation(forgotPassword, {
     onSuccess: (data) => {
       setOpenSuccessDialog(!openSuccessDialog);
     },

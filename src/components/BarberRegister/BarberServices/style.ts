@@ -37,6 +37,12 @@ export const AddServiceButton = styled.button`
   :hover {
     box-shadow: 0 0 0 4px #ffdd00;
   }
+
+  :disabled {
+    opacity: 0.4;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
 `;
 
 export const AddFirstItemButton = styled.div`
@@ -72,4 +78,12 @@ export const ModalServiceSubTitle = styled.h2`
   color: #000000;
   font-weight: 600;
   margin-top: 0px;
+`;
+
+export const AlertDisabledAddMoreService = styled.p`
+  font-size: 14px;
+  color: #000000;
+  font-weight: 400;
+  font-family: 'Roboto', 'sans-serif';
+  line-height: 1.4;
 `;

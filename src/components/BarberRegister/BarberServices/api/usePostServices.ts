@@ -3,7 +3,6 @@ import { http } from '../../../../../api/http';
 
 const addService = async (payload: object) => {
   const token = localStorage.getItem('token');
-  console.log('%c⧭', 'color: #86bf60', 'qualquer coisa');
   const { data } = await http.post(`/barberservice`, payload, {
     headers: {
       Authorization: `Bearer ${token}`,

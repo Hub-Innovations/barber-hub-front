@@ -20,7 +20,11 @@ import LoginHeader from '../../components/LoginHeader';
 import { useQueryClient, useMutation } from 'react-query';
 import { http } from '../../../api/http';
 import Router from 'next/router';
-import { regexpCleanCelPhoneNumber, regexpToEmail } from 'helpers/Form/regexp';
+import {
+  regexpCleanCelPhoneNumber,
+  regexpRemoveAllNoIsNumber,
+  regexpToEmail,
+} from 'helpers/Form/regexp';
 import { errorDefaultToast } from 'helpers/Toast/Messages/Default';
 
 type Inputs = {
@@ -32,7 +36,7 @@ type Inputs = {
   cellphone?: string;
 };
 
-const createEmployee = async (data: Inputs) => {
+const createUser = async (data: Inputs) => {
   const { data: response } = await http.post('/auth/register', data);
   return response;
 };
@@ -54,7 +58,7 @@ function Register() {
     formState: { errors },
   } = useForm<Inputs>();
 
-  const { mutate, isLoading } = useMutation(createEmployee, {
+  const { mutate, isLoading } = useMutation(createUser, {
     onSuccess: (data) => {
       localStorage.setItem('token', data.token);
       Router.push('/profile');
@@ -96,7 +100,10 @@ function Register() {
       email: data.email,
       password: data.password,
       name: data.name,
-      documentNumber: data.documentNumber,
+      documentNumber: data.documentNumber.replace(
+        regexpRemoveAllNoIsNumber,
+        ''
+      ),
       phone,
     };
 

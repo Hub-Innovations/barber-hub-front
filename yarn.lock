@@ -3310,12 +3310,10 @@ react-clientside-effect@^1.2.6:
   dependencies:
     "@babel/runtime" "^7.12.13"
 
-react-currency-format@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/react-currency-format/-/react-currency-format-1.1.0.tgz#efef7f18045fc09a987de270b144f5eec8801dab"
-  integrity sha512-WWrEOIp/3GbDSk1wlhFXaBc7IHGT3IwL306DHbGP3GVr4YFa0iS5hHPbKjHa0haruGL4Ly+WG4/5jBHpUtgqZg==
-  dependencies:
-    prop-types "^15.6.0"
+react-currency-input-field@^3.6.9:
+  version "3.6.9"
+  resolved "https://registry.yarnpkg.com/react-currency-input-field/-/react-currency-input-field-3.6.9.tgz#5eaa1190512d1de214863032045b67dd0582c87a"
+  integrity sha512-GNqG1Np+dz3VfBhDc9pFPIyar9SgB/fRjIofFSXOoyFNffda5r24n6LSoXfqQ9L7IKRDoUwveMMJV5GCM2eByw==
 
 react-datepicker@^4.8.0:
   version "4.8.0"

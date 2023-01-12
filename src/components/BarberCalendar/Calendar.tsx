@@ -66,6 +66,7 @@ import { useGetALlEvents } from './api/useGetAllEvents';
 import { useGetEvent } from './api/useGetEvent';
 import { formatToCurrency } from 'helpers/Currency/formatCurrency';
 import { errorDefaultToast } from 'helpers/Toast/Messages/Default';
+import axios from 'axios';
 
 const locales = {
   'pt-BR': ptBR,
@@ -120,6 +121,7 @@ export const CalendarComponent = () => {
   const [addEventSuccess, setAddEventSuccessModal] = React.useState(false);
   const useNewEventMutation = useAddEvent();
   const useGetAllEventsMutation = useGetALlEvents();
+  // @ts-ignore
   // const useGetEventMutation = useGetEvent();
   const [allEvents, setAllEvents] = React.useState([]);
   const [selectedServicesTotalPrice, setSelectedServicesTotalPrice] =
@@ -206,8 +208,28 @@ export const CalendarComponent = () => {
     }
   }
 
+  // por enquanto o get by id está com axios mas devemos ajustar a config do react query para pa usar ele
+  const [event, setEvent] = React.useState<any>(null);
+  async function getEventById(id: string) {
+    const token = localStorage.getItem('token');
+
+    await axios
+      .get(`${process.env.NEXT_PUBLIC_APP_BASE_URL}/event/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setEvent(response);
+      })
+      .catch((err) => {
+        toast({ status: 'error', ...errorDefaultToast });
+      });
+  }
+
   function handleShowEvent(e: any) {
-    // useGetEventMutation.refetch(e._id);
+    //useGetEventMutation.refetch('1');
+    getEventById(e._id);
     setShowModalEvent(true);
     setDataToModalEvent(e);
   }
@@ -234,7 +256,7 @@ export const CalendarComponent = () => {
       backgroundColor: '#ffffff',
       border: '2px solid #181b23',
       color: '#000000',
-      height: '44px',
+      minHeight: '44px',
       minWidth: '120px',
       marginTop: '10px',
       ':hover': {
@@ -348,7 +370,7 @@ export const CalendarComponent = () => {
     setValue('email', '');
     setValue('documentNumber', '');
     setOnlinePayment('true');
-    setSelectedServicesTotalPrice(0);
+    setServices([]);
   }
 
   interface ServiceOptionsProps {
