@@ -40,7 +40,6 @@ import {
   Label,
 } from 'components/StyledComponents/Form/AdminInputs';
 import { FaExclamationTriangle } from 'react-icons/fa';
-import CurrencyFormat from 'react-currency-format';
 import useMedia from 'hooks/useMedia';
 import { useAddService } from './api/usePostServices';
 import { useDeleteService } from './api/useDeleteService';
@@ -50,6 +49,7 @@ import {
   errorDefaultToast,
   successDefaultToast,
 } from 'helpers/Toast/Messages/Default';
+import CurrencyInput from 'react-currency-input-field';
 
 type Inputs = {
   price?: number | string;
@@ -86,6 +86,8 @@ function BarberRegisterServices() {
   const mobile = useMedia('(max-width: 769px)');
   const [btnLoading, setBtnLoading] = React.useState<boolean>(false);
   const toast = useToast();
+  const [disabledAddService, setDisabledAddService] =
+    React.useState<boolean>(false);
 
   const {
     register,
@@ -139,8 +141,11 @@ function BarberRegisterServices() {
     }
   };
 
-  function handleChangeValue(e: any) {
-    setValue('price', e.floatValue);
+  function handleChangeValue(servicePrice: any) {
+    if (servicePrice) {
+      let formattedPrice = Number(servicePrice.replace(',', '.'));
+      setValue('price', formattedPrice);
+    }
   }
 
   // sempre zerar os estados de edit para não chamar o dialog com os dados
@@ -253,6 +258,18 @@ function BarberRegisterServices() {
     }
   }, [updateServiceMutation.isError, showErrorMessage]);
 
+  // previvindo add quando tiver 20 items
+  React.useEffect(() => {
+    if (
+      getBarberServicesItems.data &&
+      getBarberServicesItems.data.length >= 20
+    ) {
+      setDisabledAddService(true);
+    } else {
+      setDisabledAddService(false);
+    }
+  }, [getBarberServicesItems.data]);
+
   return (
     <>
       {getBarberServicesItems.status === 'loading' && (
@@ -325,6 +342,16 @@ function BarberRegisterServices() {
                     </Tbody>
                   </Table>
                 </TableContainer>
+                {disabledAddService && (
+                  <Alert status="warning" mb="20px" mt="12px">
+                    <AlertIcon />
+                    <Styled.AlertDisabledAddMoreService>
+                      Você atingiu o limite de serviços (20), para adicionar
+                      mais serviços, por favor delete um item na tabela e
+                      coloque o novo serviço.
+                    </Styled.AlertDisabledAddMoreService>
+                  </Alert>
+                )}
                 <Styled.AddServiceButton
                   onClick={() => {
                     setIsOpenBarberServicesModal(true);
@@ -332,6 +359,7 @@ function BarberRegisterServices() {
                     resetServicesEdit();
                     resetServiceDelete();
                   }}
+                  disabled={disabledAddService}
                 >
                   <GrAdd size="20" color="#000000" />
                 </Styled.AddServiceButton>
@@ -393,11 +421,19 @@ function BarberRegisterServices() {
                     <Label>
                       Valor:
                       <FormInputs>
-                        <CurrencyFormat
+                        {/* <CurrencyFormat
                           value={price}
-                          thousandSeparator={true}
                           prefix={'R$'}
                           onValueChange={(e: any) => handleChangeValue(e)}
+                          decimalSeparator={','}
+                        /> */}
+                        <CurrencyInput
+                          prefix="R$"
+                          decimalSeparator=","
+                          groupSeparator="."
+                          intlConfig={{ locale: 'pt-BR', currency: 'BRl' }}
+                          onValueChange={(e: any) => handleChangeValue(e)}
+                          defaultValue={price}
                         />
                       </FormInputs>
                     </Label>

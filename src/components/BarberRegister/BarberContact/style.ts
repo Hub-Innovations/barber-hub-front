@@ -261,6 +261,11 @@ export const ShowBarberLinkFlex = styled.div`
   display: flex;
   align-items: flex-end;
   gap: 8px;
+
+  @media (max-width: 769px) {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
 `;
 
 export const ModaEditUrlSubTitle = styled.h2`

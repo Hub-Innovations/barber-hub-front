@@ -419,7 +419,7 @@ function BarberRegisterContact() {
               </Styled.SectionTitle>
               <p>Acesso o link para acessar a página da sua babearia.</p>
               <Styled.ShowBarberLinkFlex>
-                <BsArrowReturnRight color="#ffdd00" size="24" />
+                {!mobile && <BsArrowReturnRight color="#ffdd00" size="24" />}
                 <a target="_blank" data-copy="copyBarberLink">
                   {barberUrl}
                 </a>
