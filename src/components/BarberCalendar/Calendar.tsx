@@ -10,6 +10,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  Flex,
   Grid,
   Modal,
   ModalBody,
@@ -26,6 +27,7 @@ import {
   StatGroup,
   StatLabel,
   StatNumber,
+  Tag,
   Text,
   Toast,
   useDisclosure,
@@ -47,7 +49,7 @@ import Select, { StylesConfig } from 'react-select';
 import { registerLocale } from 'react-datepicker';
 import DatePicker from 'react-datepicker';
 import pt from 'date-fns/locale/pt-BR';
-import { setHours, setMinutes } from 'date-fns';
+import { parseISO, setHours, setMinutes } from 'date-fns';
 import { http } from '../../../api/http';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
@@ -65,8 +67,15 @@ import SuccessModal from 'components/Modals/SuccessModal';
 import { useGetALlEvents } from './api/useGetAllEvents';
 import { useGetEvent } from './api/useGetEvent';
 import { formatToCurrency } from 'helpers/Currency/formatCurrency';
-import { errorDefaultToast } from 'helpers/Toast/Messages/Default';
+import {
+  errorDefaultToast,
+  successDefaultToast,
+} from 'helpers/Toast/Messages/Default';
 import axios from 'axios';
+import { BsArrowRight } from 'react-icons/bs';
+import { AiOutlineCopy } from 'react-icons/ai';
+import { successCustomizableToast } from 'helpers/Toast/Messages/Customizable';
+import { useDeleteEvent } from './api/useDeleteEvent';
 
 const locales = {
   'pt-BR': ptBR,
@@ -90,10 +99,33 @@ type Inputs = {
 
 interface dataModalEventPros {
   title: string;
+  _id: string;
+  calendar: {
+    start: string | number;
+    end: string;
+  };
+  payment: {
+    paymentUrl: string;
+    status: string;
+  };
+  services: Array<object>;
+  customer: {
+    name: string;
+    email: string;
+    phone: {
+      areaCode: string;
+      number: string;
+    };
+  };
 }
 
 interface serviceProps {
   value: string;
+}
+
+interface EventStatusProps {
+  color: string;
+  statusText: string;
 }
 
 export const CalendarComponent = () => {
@@ -121,12 +153,36 @@ export const CalendarComponent = () => {
   const [addEventSuccess, setAddEventSuccessModal] = React.useState(false);
   const useNewEventMutation = useAddEvent();
   const useGetAllEventsMutation = useGetALlEvents();
+  const useDeleteEventMutation = useDeleteEvent();
   // @ts-ignore
   // const useGetEventMutation = useGetEvent();
   const [allEvents, setAllEvents] = React.useState([]);
   const [selectedServicesTotalPrice, setSelectedServicesTotalPrice] =
     React.useState(0);
   const toast = useToast();
+  const [eventStatus, setEventStatus] = React.useState<EventStatusProps | null>(
+    null
+  );
+  const [showModalCanceledEvent, setShowModalCanceledEvent] =
+    React.useState(false);
+  const [eventToCanceled, setEventToCanceled] = React.useState<
+    string | undefined
+  >(undefined);
+
+  function copyToClipboard(itemToCopy: string | undefined) {
+    if (itemToCopy) {
+      navigator.clipboard.writeText(itemToCopy).then(() => {
+        toast({
+          status: 'success',
+          title: 'Copiado com sucesso!',
+          description: 'Link copiado com sucesso para o clip board',
+          ...successCustomizableToast,
+        });
+
+        // importante setar o toast pra false
+      });
+    }
+  }
 
   const {
     register,
@@ -209,29 +265,104 @@ export const CalendarComponent = () => {
   }
 
   // por enquanto o get by id está com axios mas devemos ajustar a config do react query para pa usar ele
-  const [event, setEvent] = React.useState<any>(null);
+  const [startDateEventById, setStartDateEventById] = React.useState<string>();
+  const [endDateEventById, setEndDateEventById] = React.useState<string>();
+  const [eventToDeleteId, setEventToDeleteId] = React.useState<string>();
+  const [loadingModaEvent, setLoadingModaEvent] =
+    React.useState<boolean>(false);
   async function getEventById(id: string) {
     const token = localStorage.getItem('token');
+    setEventToDeleteId(id);
 
     await axios
-      .get(`${process.env.NEXT_PUBLIC_APP_BASE_URL}/event/${id}`, {
+      .get(`${process.env.NEXT_PUBLIC_APP_BASE_URL}/event/calendar/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
-        setEvent(response);
+        setDataToModalEvent(response.data);
+        setStartDateEventById(response.data.calendar.start);
+        setEndDateEventById(response.data.calendar.end);
+        if (response.data.payment) {
+          defineStatusEvent(response.data.payment.status);
+        }
       })
       .catch((err) => {
         toast({ status: 'error', ...errorDefaultToast });
       });
+    setLoadingModaEvent(false);
   }
 
   function handleShowEvent(e: any) {
     //useGetEventMutation.refetch('1');
-    getEventById(e._id);
     setShowModalEvent(true);
-    setDataToModalEvent(e);
+    setLoadingModaEvent(true);
+    getEventById(e._id);
+  }
+
+  function handleShowModalCanceledEvent() {
+    setShowModalCanceledEvent(true);
+    setEventToCanceled(dataToModalEvent?.title);
+  }
+
+  function handleCanceledEvent() {
+    if (eventToDeleteId) {
+      useDeleteEventMutation.mutate(eventToDeleteId);
+    }
+  }
+
+  function defineStatusEvent(status: string) {
+    switch (status) {
+      case 'pending':
+        setEventStatus({
+          color: 'yellow',
+          statusText: 'Pendente',
+        });
+        break;
+      case 'Approved':
+        setEventStatus({
+          color: 'green',
+          statusText: 'Aprovado',
+        });
+        break;
+      case 'Inprocess':
+        setEventStatus({
+          color: 'green',
+          statusText: 'Em progresso',
+        });
+        break;
+      case 'Inmediation':
+        setEventStatus({
+          color: 'gray',
+          statusText: 'Intermediação',
+        });
+        break;
+      case 'Rejected':
+        setEventStatus({
+          color: 'red',
+          statusText: 'Rejeitado',
+        });
+        break;
+      case 'Canceled':
+        setEventStatus({
+          color: 'red',
+          statusText: 'Cancelado',
+        });
+        break;
+      case 'Refunded':
+        setEventStatus({
+          color: 'yellow',
+          statusText: 'Reembolsado',
+        });
+        break;
+      case 'ChargeBack':
+        setEventStatus({
+          color: 'yellow',
+          statusText: 'Reembolsado',
+        });
+        break;
+    }
   }
 
   const messages = {
@@ -469,6 +600,15 @@ export const CalendarComponent = () => {
     }
   }, [services, selectedServicesTotalPrice]);
 
+  // efeito para deletar um event
+  React.useEffect(() => {
+    if (useDeleteEventMutation.isSuccess) {
+      toast({ status: 'success', ...successDefaultToast });
+      setShowModalCanceledEvent(false);
+      setShowModalEvent(false);
+    }
+  }, [useDeleteEventMutation.isSuccess, toast]);
+
   return (
     <>
       {useGetAllEventsMutation.isLoading ? (
@@ -482,26 +622,34 @@ export const CalendarComponent = () => {
         </Grid>
       ) : (
         <Box padding={mobile ? '40px 20px 40px 20px' : '40px 60px 60px 60px'}>
-          <Calendar
-            messages={messages}
-            culture="pt-BR"
-            localizer={localizer}
-            events={allEvents}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ height: 600 }}
-            onSelectEvent={(e) => handleShowEvent(e)}
-          />
-          <Styled.CalendarButtonAddEvent
-            onClick={() => {
-              setShowModalAddEvent(true);
-              resetModalValues();
-              setAddEventSuccessModal(false);
-            }}
-          >
-            Marcar horário
-          </Styled.CalendarButtonAddEvent>
-
+          {/* big calendar */}
+          <Box>
+            <SectionTitle>Marcar horário?</SectionTitle>
+            <Styled.CalendarButtonAddEvent
+              onClick={() => {
+                setShowModalAddEvent(true);
+                resetModalValues();
+                setAddEventSuccessModal(false);
+              }}
+            >
+              Marcar horário
+            </Styled.CalendarButtonAddEvent>
+          </Box>
+          <Box>
+            <Box mb="16px">
+              <SectionTitle>Seus agendamentos</SectionTitle>
+            </Box>
+            <Calendar
+              messages={messages}
+              culture="pt-BR"
+              localizer={localizer}
+              events={allEvents}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ height: 600 }}
+              onSelectEvent={(e) => handleShowEvent(e)}
+            />
+          </Box>
           {/* modal para adicionar um evento */}
           <Modal
             size={(mobile && !mobileM && 'sm') || (mobileM && 'xs') || '4xl'}
@@ -785,32 +933,213 @@ export const CalendarComponent = () => {
               </ModalBody>
             </ModalContent>
           </Modal>
-
-          {/* modal para ver os detalhes de evento já marcado */}
           <Modal
-            size={mobile ? 'xs' : 'md'}
+            size={mobile ? 'xs' : '3xl'}
             isOpen={showModalEvent}
             onClose={() => setShowModalEvent(false)}
             isCentered
           >
             <ModalOverlay />
+            {loadingModaEvent ? (
+              <ModalContent>
+                <ModalHeader>
+                  <SectionTitle>Carregando evento...</SectionTitle>
+                </ModalHeader>
+                <ModalCloseButton />
+                <Grid placeItems="center" pb="20px">
+                  <CircularProgress
+                    isIndeterminate
+                    color="#ffdd00"
+                    size="20"
+                    thickness="3px"
+                  />
+                </Grid>
+              </ModalContent>
+            ) : (
+              <ModalContent>
+                <ModalHeader>
+                  <SectionTitle>{dataToModalEvent?.title}</SectionTitle>
+                </ModalHeader>
+                <ModalCloseButton />
+                <ModalBody>
+                  {/* seção de info de pagamento */}
+                  <Box>
+                    <Styled.EventModalSectionTitle>
+                      <Flex
+                        gap="8px"
+                        alignItems="center"
+                        flexWrap={mobile ? 'wrap' : 'nowrap'}
+                      >
+                        Informações de pagamento:
+                        {dataToModalEvent?.payment ? (
+                          <Tag colorScheme="red">{eventStatus?.statusText}</Tag>
+                        ) : (
+                          <Tag colorScheme="green">Pagar no local</Tag>
+                        )}
+                      </Flex>
+                    </Styled.EventModalSectionTitle>
+                    {dataToModalEvent?.payment && (
+                      <Styled.EventModalLabel>
+                        <span className="flex">
+                          Link de pagamento{' '}
+                          <BsArrowRight color="#181b23" size="16" />
+                        </span>
+                        <span
+                          className="link"
+                          onClick={() =>
+                            copyToClipboard(
+                              dataToModalEvent?.payment.paymentUrl
+                            )
+                          }
+                        >
+                          <span data-copy="paymentUrl">
+                            {dataToModalEvent?.payment.paymentUrl.substring(
+                              0,
+                              40
+                            )}
+                            ...
+                          </span>
+                          <AiOutlineCopy />
+                        </span>
+                      </Styled.EventModalLabel>
+                    )}
+                  </Box>
+                  {/* seção dos horários */}
+                  <Box mt="40px">
+                    <Styled.EventModalSectionTitle>
+                      Horários:
+                    </Styled.EventModalSectionTitle>
+                    <Styled.EventModalLabel>
+                      <span className="flex">Horário de entrada:</span>
+                      <span>
+                        {startDateEventById &&
+                          format(
+                            parseISO(startDateEventById),
+                            'dd/MM/yyyy HH:mm'
+                          )}
+                      </span>
+                    </Styled.EventModalLabel>
+                    <Styled.EventModalLabel>
+                      <span className="flex">Horário de saída:</span>
+                      <span>
+                        {endDateEventById &&
+                          format(
+                            parseISO(endDateEventById),
+                            'dd/MM/yyyy HH:mm',
+                            {
+                              locale: ptBR,
+                            }
+                          )}
+                      </span>
+                    </Styled.EventModalLabel>
+                  </Box>
+                  {/* seção dos serviços */}
+                  <Box mt="40px">
+                    <Styled.EventModalSectionTitle>
+                      Serviços escolhidos:
+                    </Styled.EventModalSectionTitle>
+                    <Styled.EventModalServicesList>
+                      {dataToModalEvent?.services.map(
+                        // @ts-ignore
+                        (service: ServiceOptionsProps, i) => {
+                          return (
+                            <li key={i}>
+                              <span className="serviceName">
+                                {service.name}
+                              </span>
+                              <span className="servicePrice">
+                                {formatToCurrency(service.price)}
+                              </span>
+                            </li>
+                          );
+                        }
+                      )}
+                    </Styled.EventModalServicesList>
+                  </Box>
+                  {/* info do cliente */}
+                  <Box mt="40px" pb="20px">
+                    <Styled.EventModalSectionTitle>
+                      Informações do cliente:
+                    </Styled.EventModalSectionTitle>
+                    <Styled.EventModalLabel>
+                      <span className="flex">Nome:</span>
+                      <span>{dataToModalEvent?.customer.name}</span>
+                    </Styled.EventModalLabel>
+                    {dataToModalEvent?.customer.email && (
+                      <Styled.EventModalLabel>
+                        <span className="flex">Email:</span>
+                        <span>{dataToModalEvent?.customer.email}</span>
+                      </Styled.EventModalLabel>
+                    )}
+                    {dataToModalEvent?.customer.phone && (
+                      <Styled.EventModalLabel>
+                        <span className="flex">Celular:</span>
+                        <span>{`(${
+                          dataToModalEvent?.customer.phone.areaCode
+                        }) ${dataToModalEvent?.customer.phone.number.substring(
+                          0,
+                          5
+                        )}-${dataToModalEvent?.customer.phone.number.substring(
+                          5,
+                          9
+                        )}`}</span>
+                      </Styled.EventModalLabel>
+                    )}
+                  </Box>
+                  {/* cancelar agendamento */}
+                  <Box pb="20px">
+                    <Styled.EventModalSectionTitle beforeColor={'#d00000'}>
+                      Cancelar agendamento?
+                    </Styled.EventModalSectionTitle>
+                    <Styled.ModalEventButtonCanceledEvent
+                      onClick={(e) => handleShowModalCanceledEvent()}
+                    >
+                      Cancelar
+                    </Styled.ModalEventButtonCanceledEvent>
+                  </Box>
+                </ModalBody>
+              </ModalContent>
+            )}
+          </Modal>
+          {/* modal para cancelar um evento */}
+          <Modal
+            size={mobile ? 'xs' : 'lg'}
+            isOpen={showModalCanceledEvent}
+            onClose={() => setShowModalCanceledEvent(false)}
+            isCentered
+          >
+            <ModalOverlay />
             <ModalContent>
               <ModalHeader>
-                <SectionTitle>{dataToModalEvent?.title}</SectionTitle>
+                <SectionTitle>Cancelar evento</SectionTitle>
               </ModalHeader>
               <ModalCloseButton />
               <ModalBody>
-                Conteúdo que vai vir do get pelo id, trazendo todas as
-                informações desse serviço...
+                <Styled.ModalCanceledEventText>
+                  tem certeza que deseja cancelar o event{' '}
+                  <span className="event">{`${eventToCanceled}?`}</span> Essa
+                  ação, ira remover o evento da sua agenda
+                </Styled.ModalCanceledEventText>
+                <Flex justifyContent="center" gap="20px" mt="20px" pb="20px">
+                  <Styled.ModalEventButtonCanceledEvent
+                    onClick={(e) => setShowModalCanceledEvent(false)}
+                    flex={true}
+                    outline={true}
+                  >
+                    Fechar
+                  </Styled.ModalEventButtonCanceledEvent>
+                  <Styled.ModalEventButtonCanceledEvent
+                    onClick={(e) => handleCanceledEvent()}
+                    disabled={useDeleteEventMutation.isLoading}
+                  >
+                    {useDeleteEventMutation.isLoading ? (
+                      <Spinner color="#181b23" />
+                    ) : (
+                      'Cancelar'
+                    )}
+                  </Styled.ModalEventButtonCanceledEvent>
+                </Flex>
               </ModalBody>
-              <Styled.ModalEventButtonFlex>
-                <Styled.ModaEventButton
-                  onClick={() => setShowModalEvent(false)}
-                >
-                  Fechar
-                </Styled.ModaEventButton>
-                <Styled.ModaEventButton>Deletar</Styled.ModaEventButton>
-              </Styled.ModalEventButtonFlex>
             </ModalContent>
           </Modal>
         </Box>
