@@ -30,6 +30,7 @@ import {
   Tag,
   Text,
   Toast,
+  Tooltip,
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
@@ -60,7 +61,7 @@ import {
   regexpToEmail,
   regexpCleanCelPhoneNumber,
 } from 'helpers/Form/regexp';
-import { FaExclamationTriangle } from 'react-icons/fa';
+import { FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
 import { useGetBarberServices } from 'components/BarberRegister/BarberServices/api/useGetServices';
 import { useAddEvent } from './api/useNewEvent';
 import SuccessModal from 'components/Modals/SuccessModal';
@@ -638,6 +639,11 @@ export const CalendarComponent = () => {
           <Box>
             <Box mb="16px">
               <SectionTitle>Seus agendamentos</SectionTitle>
+              <Styled.HelpEventText>
+                <FaExclamationTriangle color="#ffdd00" size="16px" />
+                Clique em qualquer agendamento, para abrir as informações desse
+                evento.
+              </Styled.HelpEventText>
             </Box>
             <Calendar
               messages={messages}
