@@ -255,3 +255,18 @@ export const ModalCanceledEventText = styled.p`
     font-weight: bold;
   }
 `;
+
+export const HelpEventText = styled.p`
+  font-size: 16px;
+  color: #000000;
+  font-weight: 600;
+  font-family: 'Poppins', 'sans-serif';
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+
+  @media (max-width: 769px) {
+    font-size: 14px;
+  }
+`;
