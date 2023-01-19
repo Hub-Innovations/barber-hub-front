@@ -46,6 +46,7 @@ import {
   erroCustomizableToast,
   successCustomizableToast,
 } from 'helpers/Toast/Messages/Customizable';
+import { useGetCheckRegisterBarber } from './api/useGetCheckRegisterBarber';
 
 type Inputs = {
   _id: string | null;
@@ -126,6 +127,7 @@ function BarberRegisterContact() {
   const [currentBarberUrl, setCurrentBarberUrl] = React.useState('');
   const mobile = useMedia('(max-width: 769px)');
   const toast = useToast();
+  const checkBarberIsRegister = useGetCheckRegisterBarber();
 
   const {
     register,
@@ -143,6 +145,7 @@ function BarberRegisterContact() {
     {
       onSuccess: (data) => {
         toast({ status: 'success', ...successDefaultToast });
+        queryClient.invalidateQueries({ queryKey: ['checkBarberIsRegister'] });
       },
       onError: (err: any) => {
         if (err.response.data.message === BarberShopAlreadyExists) {
@@ -209,8 +212,24 @@ function BarberRegisterContact() {
 
     // fazendo o format somente quando ocorrer a edição nos campos
     // para não formatar um valor que já vem limpo do back
-    if (isNaN(Number(data.cellphone))) {
-      data.cellphone = data.cellphone.replace(regexpCleanCelPhoneNumber, '');
+    let cellPhoneNumberSplit = data.cellphone?.split(' ');
+    let phone = {};
+    if (cellPhoneNumberSplit) {
+      let areaCode = cellPhoneNumberSplit[0].replace(
+        regexpCleanCelPhoneNumber,
+        ''
+      );
+
+      let number = cellPhoneNumberSplit[1].replace(
+        regexpCleanCelPhoneNumber,
+        ''
+      );
+
+      phone = {
+        areaCode,
+        number,
+        isWhatsapp: data.haveWhatsApp,
+      };
     }
 
     if (isNaN(Number(data.fixCellphone))) {
@@ -231,7 +250,7 @@ function BarberRegisterContact() {
     if (barberHaveId) {
       user = {
         _id: barberHaveId,
-        celPhone: data.cellphone,
+        celPhone: phone,
         name: data.barberName,
         telPhone: data.fixCellphone,
         email: data.email,
@@ -246,7 +265,7 @@ function BarberRegisterContact() {
       };
     } else {
       user = {
-        celPhone: data.cellphone,
+        celPhone: phone,
         name: data.barberName,
         telPhone: data.fixCellphone,
         email: data.email,
@@ -267,9 +286,11 @@ function BarberRegisterContact() {
   // get all que pega as informações de uma barbearia criada
   function barberInfo() {
     if (data._id) {
+      // precisa do espaço para não quebrar a lógica de formatação no submit
+      const cellPhone = `${data.celPhone.areaCode} ${data.celPhone.number}`;
       //   setando os valores do form para edição
       setValue('barberName', data.name);
-      setValue('cellphone', data.celPhone);
+      setValue('cellphone', cellPhone);
       setValue('fixCellphone', data.telPhone);
       setValue('email', data.email);
       setBarberUrl(data.barberUrl);
@@ -279,6 +300,7 @@ function BarberRegisterContact() {
       setValue('addressComplement', data.address.complement);
       setValue('addressNumber', data.address.number);
       setValue('city', data.address.city);
+      setValue('haveWhatsApp', data.celPhone.isWhatsapp);
       setBarberHaveId(data._id);
       setCurrentBarberUrl(data.barberUrl);
       // tem que forçar uma atualização no dom para funcionar o mask dos inputs

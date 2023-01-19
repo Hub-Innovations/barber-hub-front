@@ -95,6 +95,11 @@ export const CalendarButtonAddEvent = styled.button`
   min-height: 44px;
   margin-bottom: 40px;
 
+  :disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
   :hover {
     box-shadow: 0 0 0 2px #ffdd00;
   }

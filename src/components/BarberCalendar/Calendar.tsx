@@ -75,8 +75,13 @@ import {
 import axios from 'axios';
 import { BsArrowRight } from 'react-icons/bs';
 import { AiOutlineCopy } from 'react-icons/ai';
-import { successCustomizableToast } from 'helpers/Toast/Messages/Customizable';
+import {
+  erroCustomizableToast,
+  successCustomizableToast,
+} from 'helpers/Toast/Messages/Customizable';
 import { useDeleteEvent } from './api/useDeleteEvent';
+import { useGetCheckRegisterBarber } from 'components/BarberRegister/BarberContact/api/useGetCheckRegisterBarber';
+import Link from 'next/link';
 
 const locales = {
   'pt-BR': ptBR,
@@ -169,6 +174,9 @@ export const CalendarComponent = () => {
   const [eventToCanceled, setEventToCanceled] = React.useState<
     string | undefined
   >(undefined);
+  const [showMessageRequiredRegister, setShowMessageRequiredRegister] =
+    React.useState(true);
+  const checkBarberIsRegister = useGetCheckRegisterBarber();
 
   function copyToClipboard(itemToCopy: string | undefined) {
     if (itemToCopy) {
@@ -574,11 +582,25 @@ export const CalendarComponent = () => {
   }, [useGetAllEventsMutation.isSuccess, useGetAllEventsMutation.data]);
 
   // verificando quando o get dos eventos der erro
+  // deu erro 400 quer dizer que não fez o cadastro da barbearia então alert de aviso para  completar o cadastro
+  // qualquer outro erro, vai dar o toast padrão
   React.useEffect(() => {
-    if (useGetAllEventsMutation.isError) {
+    if (
+      useGetAllEventsMutation.isError &&
+      // @ts-ignore
+      useGetAllEventsMutation.error.response.status === 400
+    ) {
+      toast({
+        status: 'warning',
+        title: 'Ops! Você não concluiu o cadastro da sua barbearia',
+        description:
+          'Para visualizar os seus agendamentos, marcar um evento, complete o cadastro da sua barbearia',
+        ...erroCustomizableToast,
+      });
+    } else if (useGetAllEventsMutation.isError) {
       toast({ status: 'error', ...errorDefaultToast });
     }
-  }, [useGetAllEventsMutation.isError, toast]);
+  }, [useGetAllEventsMutation.isError, toast, showMessageRequiredRegister]);
 
   // efeito para somar os valores total dos serviços escolhidos
   React.useEffect(() => {
@@ -610,6 +632,25 @@ export const CalendarComponent = () => {
     }
   }, [useDeleteEventMutation.isSuccess, toast]);
 
+  // verificando se a babearia já possui um cadastro feito para marcar um evento
+  React.useEffect(() => {
+    if (checkBarberIsRegister.isError) {
+      // @ts-ignore
+      if (checkBarberIsRegister.error.response.status === 403) {
+        setShowMessageRequiredRegister(true);
+      } else {
+        setShowMessageRequiredRegister(false);
+        toast({ status: 'error', ...errorDefaultToast });
+      }
+    }
+  }, [checkBarberIsRegister.isError, checkBarberIsRegister.error, toast]);
+
+  React.useEffect(() => {
+    if (checkBarberIsRegister.isSuccess) {
+      setShowMessageRequiredRegister(false);
+    }
+  }, [checkBarberIsRegister.isSuccess]);
+
   return (
     <>
       {useGetAllEventsMutation.isLoading ? (
@@ -626,7 +667,29 @@ export const CalendarComponent = () => {
           {/* big calendar */}
           <Box>
             <SectionTitle>Marcar horário?</SectionTitle>
+            {showMessageRequiredRegister && (
+              <Box mt="10px">
+                <Alert status="warning">
+                  <AlertIcon />
+                  <Text
+                    fontFamily="Roboto, sans-serif"
+                    fontSize="16px"
+                    lineHeight="1.4"
+                    color="#000000"
+                    fontWeight="bold"
+                  >
+                    Para conseguir fazer um agendamento, primeiro você precisa
+                    fazer o cadastro da sua barbearia, clique no link abaixo,
+                    para finalizar seu cadastro.
+                    <Text color="#000000" textDecoration="underline">
+                      <Link href="/profile">Finalizar cadastro</Link>
+                    </Text>
+                  </Text>
+                </Alert>
+              </Box>
+            )}
             <Styled.CalendarButtonAddEvent
+              disabled={showMessageRequiredRegister}
               onClick={() => {
                 setShowModalAddEvent(true);
                 resetModalValues();
