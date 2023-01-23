@@ -329,46 +329,16 @@ export const CalendarComponent = () => {
           statusText: 'Pendente',
         });
         break;
-      case 'Approved':
+      case 'paid':
         setEventStatus({
           color: 'green',
           statusText: 'Aprovado',
         });
         break;
-      case 'Inprocess':
-        setEventStatus({
-          color: 'green',
-          statusText: 'Em progresso',
-        });
-        break;
-      case 'Inmediation':
-        setEventStatus({
-          color: 'gray',
-          statusText: 'Intermediação',
-        });
-        break;
-      case 'Rejected':
-        setEventStatus({
-          color: 'red',
-          statusText: 'Rejeitado',
-        });
-        break;
-      case 'Canceled':
+      case 'canceled':
         setEventStatus({
           color: 'red',
           statusText: 'Cancelado',
-        });
-        break;
-      case 'Refunded':
-        setEventStatus({
-          color: 'yellow',
-          statusText: 'Reembolsado',
-        });
-        break;
-      case 'ChargeBack':
-        setEventStatus({
-          color: 'yellow',
-          statusText: 'Reembolsado',
         });
         break;
     }
