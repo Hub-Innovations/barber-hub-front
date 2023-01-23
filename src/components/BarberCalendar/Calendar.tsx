@@ -1053,22 +1053,25 @@ export const CalendarComponent = () => {
                           Link de pagamento{' '}
                           <BsArrowRight color="#181b23" size="16" />
                         </span>
-                        <span
-                          className="link"
-                          onClick={() =>
-                            copyToClipboard(
-                              dataToModalEvent?.payment.paymentUrl
-                            )
-                          }
-                        >
-                          <span data-copy="paymentUrl">
+                        <span className="link">
+                          <Link
+                            data-copy="paymentUrl"
+                            target="_blank"
+                            href={dataToModalEvent?.payment.paymentUrl}
+                          >
                             {dataToModalEvent?.payment.paymentUrl.substring(
                               0,
                               40
                             )}
                             ...
-                          </span>
-                          <AiOutlineCopy />
+                          </Link>
+                          <AiOutlineCopy
+                            onClick={() =>
+                              copyToClipboard(
+                                dataToModalEvent?.payment.paymentUrl
+                              )
+                            }
+                          />
                         </span>
                       </Styled.EventModalLabel>
                     )}
