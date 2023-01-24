@@ -325,7 +325,7 @@ export const CalendarComponent = () => {
     switch (status) {
       case 'pending':
         setEventStatus({
-          color: 'yellow',
+          color: 'gray',
           statusText: 'Pendente',
         });
         break;
@@ -335,7 +335,7 @@ export const CalendarComponent = () => {
           statusText: 'Aprovado',
         });
         break;
-      case 'canceled':
+      case 'recused':
         setEventStatus({
           color: 'red',
           statusText: 'Cancelado',
@@ -1011,7 +1011,9 @@ export const CalendarComponent = () => {
                       >
                         Informações de pagamento:
                         {dataToModalEvent?.payment ? (
-                          <Tag colorScheme="red">{eventStatus?.statusText}</Tag>
+                          <Tag colorScheme={eventStatus?.color}>
+                            {eventStatus?.statusText}
+                          </Tag>
                         ) : (
                           <Tag colorScheme="green">Pagar no local</Tag>
                         )}
