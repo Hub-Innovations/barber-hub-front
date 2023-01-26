@@ -23,33 +23,33 @@ import {
   CircularProgress,
   Text,
   useToast,
-} from "@chakra-ui/react";
-import { formatToCurrency } from "helpers/Currency/formatCurrency";
-import React, { useReducer } from "react";
-import { BsFillPencilFill, BsFillTrashFill } from "react-icons/bs";
-import { GrAdd } from "react-icons/gr";
-import * as Styled from "./style";
-import * as BarberGeneralServices from "../style";
-import { http } from "../../../../api/http";
-import { useMutation, useQuery, useQueryClient } from "react-query";
-import { Controller, useForm, SubmitHandler } from "react-hook-form";
+} from '@chakra-ui/react';
+import { formatToCurrency } from 'helpers/Currency/formatCurrency';
+import React, { useReducer } from 'react';
+import { BsFillPencilFill, BsFillTrashFill } from 'react-icons/bs';
+import { GrAdd } from 'react-icons/gr';
+import * as Styled from './style';
+import * as BarberGeneralServices from '../style';
+import { http } from '../../../../api/http';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { Controller, useForm, SubmitHandler } from 'react-hook-form';
 import {
   ErrorMessage,
   FormInputs,
   Input,
   Label,
-} from "components/StyledComponents/Form/AdminInputs";
-import { FaExclamationTriangle } from "react-icons/fa";
-import useMedia from "hooks/useMedia";
-import { useAddService } from "./api/usePostServices";
-import { useDeleteService } from "./api/useDeleteService";
-import { useUpdateService } from "./api/useUpdateService";
-import { useGetBarberServices } from "./api/useGetServices";
+} from 'components/StyledComponents/Form/AdminInputs';
+import { FaExclamationTriangle } from 'react-icons/fa';
+import useMedia from 'hooks/useMedia';
+import { useAddService } from './api/usePostServices';
+import { useDeleteService } from './api/useDeleteService';
+import { useUpdateService } from './api/useUpdateService';
+import { useGetBarberServices } from './api/useGetServices';
 import {
   errorDefaultToast,
   successDefaultToast,
-} from "helpers/Toast/Messages/Default";
-import CurrencyInput from "react-currency-input-field";
+} from 'helpers/Toast/Messages/Default';
+import CurrencyInput from 'react-currency-input-field';
 
 type Inputs = {
   price?: number | string;
@@ -59,7 +59,7 @@ type Inputs = {
 interface ToastProps {
   title?: string;
   message?: string;
-  status: "success" | "info" | "warning" | "error" | "loading" | undefined;
+  status: 'success' | 'info' | 'warning' | 'error' | 'loading' | undefined;
 }
 
 interface ServicesProps {
@@ -83,7 +83,7 @@ function BarberRegisterServices() {
   const [serviceDelete, setServiceDelete] = React.useState(false);
   const [serviceToDelete, setServiceToDelete] =
     React.useState<ServicesProps | null>(null);
-  const mobile = useMedia("(max-width: 769px)");
+  const mobile = useMedia('(max-width: 769px)');
   const [btnLoading, setBtnLoading] = React.useState<boolean>(false);
   const toast = useToast();
   const [disabledAddService, setDisabledAddService] =
@@ -143,8 +143,8 @@ function BarberRegisterServices() {
 
   function handleChangeValue(servicePrice: any) {
     if (servicePrice) {
-      let formattedPrice = Number(servicePrice.replace(",", "."));
-      setValue("price", formattedPrice);
+      let formattedPrice = Number(servicePrice.replace(',', '.'));
+      setValue('price', formattedPrice);
     }
   }
 
@@ -152,8 +152,8 @@ function BarberRegisterServices() {
   function resetServicesEdit() {
     setEditService(false);
     setServiceToEdit(null);
-    setValue("name", "");
-    setValue("price", 0.0);
+    setValue('name', '');
+    setValue('price', 0.0);
     setPrice(0.0);
   }
 
@@ -161,8 +161,8 @@ function BarberRegisterServices() {
     resetServiceDelete();
     setEditService(true);
     setServiceToEdit(service);
-    setValue("name", service.name);
-    setValue("price", service.price);
+    setValue('name', service.name);
+    setValue('price', service.price);
     setPrice(service.price);
     setIsOpenBarberServicesModal(true);
   }
@@ -185,23 +185,23 @@ function BarberRegisterServices() {
   }
 
   function defineModalButtonText() {
-    let text = "Adicionar";
+    let text = 'Adicionar';
 
     if (editService) {
-      text = "Editar";
+      text = 'Editar';
     }
 
     return text;
   }
 
   const showSuccessMessage = React.useCallback(() => {
-    toast({ status: "success", ...successDefaultToast });
+    toast({ status: 'success', ...successDefaultToast });
     setIsOpenBarberServicesModal(false);
     setDeleteServiceModal(false);
   }, [toast]);
 
   const showErrorMessage = React.useCallback(() => {
-    toast({ status: "error", ...errorDefaultToast });
+    toast({ status: 'error', ...errorDefaultToast });
   }, [toast]);
 
   React.useEffect(() => {
@@ -272,7 +272,7 @@ function BarberRegisterServices() {
 
   return (
     <>
-      {getBarberServicesItems.status === "loading" && (
+      {getBarberServicesItems.status === 'loading' && (
         <Grid placeItems="center" mt="60px">
           <CircularProgress
             isIndeterminate
@@ -282,7 +282,7 @@ function BarberRegisterServices() {
           />
         </Grid>
       )}
-      {getBarberServicesItems.status !== "loading" && (
+      {getBarberServicesItems.status !== 'loading' && (
         <>
           {getBarberServicesItems.data &&
             getBarberServicesItems.data.length > 0 && (
@@ -397,19 +397,19 @@ function BarberRegisterServices() {
             onClose={handleCloseModalService}
             isOpen={isOpenBarberServicesModal}
             isCentered
-            size={mobile ? "xs" : "lg"}
+            size={mobile ? 'xs' : 'lg'}
           >
             <ModalOverlay />
             <ModalContent>
               <ModalHeader>
                 <Grid placeItems="center" mt="24px" gap="12px">
                   <BarberGeneralServices.SectionTitle>
-                    {editService ? "Editar serviços" : "Adicionar serviços"}
+                    {editService ? 'Editar serviços' : 'Adicionar serviços'}
                   </BarberGeneralServices.SectionTitle>
                   <Styled.ModalServiceSubTitle>
                     {editService
-                      ? "Preenche os campos abaixo para editar"
-                      : "Preenche os campos abaixo para adicionar"}
+                      ? 'Preenche os campos abaixo para editar'
+                      : 'Preenche os campos abaixo para adicionar'}
                   </Styled.ModalServiceSubTitle>
                 </Grid>
               </ModalHeader>
@@ -435,7 +435,7 @@ function BarberRegisterServices() {
                           prefix="R$"
                           decimalSeparator=","
                           groupSeparator="."
-                          intlConfig={{ locale: "pt-BR", currency: "BRl" }}
+                          intlConfig={{ locale: 'pt-BR', currency: 'BRl' }}
                           onValueChange={(e: any) => handleChangeValue(e)}
                           defaultValue={price}
                         />
@@ -446,7 +446,7 @@ function BarberRegisterServices() {
                       <Input
                         type="text"
                         placeholder="corte navalhado"
-                        {...register("name")}
+                        {...register('name')}
                       />
                     </Label>
                   </Grid>
@@ -481,7 +481,7 @@ function BarberRegisterServices() {
             onClose={handleCloseDeleteServiceModal}
             isOpen={deleteServiceModal}
             isCentered
-            size={mobile ? "xs" : "lg"}
+            size={mobile ? 'xs' : 'lg'}
           >
             <ModalOverlay />
             <ModalContent>
@@ -491,7 +491,7 @@ function BarberRegisterServices() {
                     Deletar serviço
                   </BarberGeneralServices.SectionTitle>
 
-                  <Alert status="warning" borderRadius={"8px"} mt="12px">
+                  <Alert status="warning" borderRadius={'8px'} mt="12px">
                     <AlertIcon />
                     <Text
                       fontFamily="Roboto"
@@ -499,9 +499,9 @@ function BarberRegisterServices() {
                       fontWeight="normal"
                       color="#000000"
                     >
-                      Tem certeza que deseja deletar o serviço:{" "}
+                      Tem certeza que deseja deletar o serviço:{' '}
                       <Text fontWeight="bold" display="inline">
-                        {serviceToDelete ? serviceToDelete.name : ""}?
+                        {serviceToDelete ? serviceToDelete.name : ''}?
                       </Text>
                     </Text>
                   </Alert>
@@ -519,7 +519,7 @@ function BarberRegisterServices() {
                     Cancelar
                   </BarberGeneralServices.ModalButton>
                   <BarberGeneralServices.ModalButton disabled={btnLoading}>
-                    {btnLoading ? <Spinner color="#181b23" /> : "Deletar"}
+                    {btnLoading ? <Spinner color="#181b23" /> : 'Deletar'}
                   </BarberGeneralServices.ModalButton>
                 </Flex>
               </form>
