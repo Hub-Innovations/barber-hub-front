@@ -332,7 +332,7 @@ export const CalendarComponent = () => {
       case 'paid':
         setEventStatus({
           color: 'green',
-          statusText: 'Aprovado',
+          statusText: 'Pago',
         });
         break;
       case 'recused':
@@ -1015,7 +1015,7 @@ export const CalendarComponent = () => {
                             {eventStatus?.statusText}
                           </Tag>
                         ) : (
-                          <Tag colorScheme="green">Pagar no local</Tag>
+                          <Tag colorScheme="blue">Pagar no local</Tag>
                         )}
                       </Flex>
                     </Styled.EventModalSectionTitle>
