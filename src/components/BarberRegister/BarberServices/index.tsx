@@ -300,6 +300,9 @@ function BarberRegisterServices() {
                         <Th>
                           <Styled.TableTitleHead>Serviço</Styled.TableTitleHead>
                         </Th>
+                        <Th>
+                          <Styled.TableTitleHead>Minutos</Styled.TableTitleHead>
+                        </Th>
                         <Th isNumeric>
                           <Styled.TableTitleHead>Editar</Styled.TableTitleHead>
                         </Th>
@@ -315,6 +318,7 @@ function BarberRegisterServices() {
                             <Tr key={i}>
                               <Td>{formatToCurrency(item.price)}</Td>
                               <Td>{item.name}</Td>
+                              <Td>{item.minutes}</Td>
                               <Td isNumeric>
                                 <Styled.TableSvg>
                                   <BsFillPencilFill
