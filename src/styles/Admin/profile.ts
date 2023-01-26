@@ -24,6 +24,11 @@ export const TabLabel = styled.p`
 
   @media (max-width: 769px) {
     font-size: 14px;
-    margin-right: 20px;
+    margin-right: 0px;
+  }
+
+  @media (max-width: 400px) {
+    font-size: 12px;
+    margin-right: 0px;
   }
 `;
