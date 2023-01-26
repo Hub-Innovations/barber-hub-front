@@ -22,6 +22,10 @@ export const Input = styled.input`
     opacity: 0.2;
   }
 
+  :focus {
+    border-width: 3px;
+  }
+
   @media (max-width: 600px) {
     height: 40px;
   }

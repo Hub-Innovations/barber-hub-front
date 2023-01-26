@@ -22,6 +22,15 @@ import {
   Tr,
   useToast,
   Text,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+  Tooltip,
 } from '@chakra-ui/react';
 import { formatToCurrency } from 'helpers/Currency/formatCurrency';
 import useMedia from 'hooks/useMedia';
@@ -39,9 +48,8 @@ import {
   ErrorMessage,
   FormInputs,
 } from 'components/StyledComponents/Form/AdminInputs';
-import { FaExclamationTriangle } from 'react-icons/fa';
+import { FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
 import { GrAdd } from 'react-icons/gr';
-import CurrencyInput from 'react-currency-input-field';
 import {
   errorDefaultToast,
   successDefaultToast,
@@ -100,10 +108,12 @@ const BarberAllBarbers = () => {
     if (!barberDelete) {
       if (data.name && data.comission) {
         setCheckForm(true);
+        let comissionToString = String(data.comission);
+        let numberComission = Number(comissionToString.replace(',', '.'));
 
         if (!editBarber) {
           addBarberMutation.mutate({
-            comission: data.comission,
+            comission: numberComission,
             name: data.name,
           });
         }
@@ -113,7 +123,7 @@ const BarberAllBarbers = () => {
             updateBarberMutation.mutate({
               _id: barberToEdit._id,
               name: data.name,
-              comission: data.comission,
+              comission: numberComission,
             });
           }
         }
@@ -128,13 +138,6 @@ const BarberAllBarbers = () => {
       }
     }
   };
-
-  function handleChangeValue(comissionPrice: any) {
-    if (comissionPrice) {
-      let formattedComission = Number(comissionPrice.replace(',', '.'));
-      setValue('comission', formattedComission);
-    }
-  }
 
   function defineModalButtonText() {
     let text = 'Adicionar';
@@ -290,7 +293,8 @@ const BarberAllBarbers = () => {
                       return (
                         <Tr key={i}>
                           <Td>{item.name}</Td>
-                          <Td>{formatToCurrency(item.comission)}</Td>
+                          {/* <Td>{formatToCurrency(item.comission)}</Td> */}
+                          <Td>1</Td>
                           <Td isNumeric>
                             <Styled.TableSvg>
                               <BsFillPencilFill
@@ -368,20 +372,43 @@ const BarberAllBarbers = () => {
                         {...register('name')}
                       />
                     </Label>
-                    <Label>
-                      Comissão:
-                      <FormInputs>
-                        <CurrencyInput
-                          style={{ paddingLeft: '12px' }}
-                          prefix="R$"
-                          decimalSeparator=","
-                          groupSeparator="."
-                          intlConfig={{ locale: 'pt-BR', currency: 'BRl' }}
-                          onValueChange={(e: any) => handleChangeValue(e)}
-                          defaultValue={comission}
+                    {/* tem que ser um label sem ser o componente, para não desalinhar o icone de % */}
+                    <label>
+                      <Text
+                        fontFamily="Poppins, sans-serif"
+                        fontWeight="400"
+                        color="#000000"
+                        fontSize={mobile ? '16px' : '18px'}
+                        mb="8px"
+                      >
+                        Comissão:
+                        <Tooltip
+                          label="Valor em porcentagem"
+                          placement="right-end"
+                          bg="#495057"
+                          color="#f1f1f1"
+                          fontFamily="Poppins, sans-serif"
+                          fontSize="14px"
+                          fontWeight="600"
+                          letterSpacing="0.015rem"
+                          closeOnClick={false}
+                        >
+                          <button type="button" id="buttonTooltip">
+                            <FaInfoCircle color="#ffdd00" size="16" />
+                          </button>
+                        </Tooltip>
+                      </Text>
+                      <InputGroup>
+                        <Input
+                          type="text"
+                          placeholder="Phone number"
+                          {...register('comission')}
                         />
-                      </FormInputs>
-                    </Label>
+                        <InputRightElement pointerEvents="none">
+                          %
+                        </InputRightElement>
+                      </InputGroup>
+                    </label>
                   </Grid>
                   {!checkForm && (
                     <ErrorMessage>
