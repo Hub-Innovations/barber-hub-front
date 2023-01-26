@@ -22,13 +22,7 @@ import {
   Tr,
   useToast,
   Text,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   InputGroup,
-  InputLeftElement,
   InputRightElement,
   Tooltip,
 } from '@chakra-ui/react';
@@ -43,10 +37,12 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { useAddBarber } from './api/usePostBarbers';
 import { useUpdateBarber } from './api/useUpdateBarber';
 import { useDeleteBarber } from './api/useDeleteBarber';
-import { Input, Label } from '../BarberContact/style';
+// nao pode pehar de barberContact
 import {
   ErrorMessage,
   FormInputs,
+  Input,
+  Label,
 } from 'components/StyledComponents/Form/AdminInputs';
 import { FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
 import { GrAdd } from 'react-icons/gr';
@@ -58,6 +54,7 @@ import {
 type Inputs = {
   comission: number | string;
   name: string;
+  barberImgProfile: string;
 };
 
 interface BarberProps {
@@ -409,6 +406,7 @@ const BarberAllBarbers = () => {
                         </InputRightElement>
                       </InputGroup>
                     </label>
+                    <input type="file" {...register('barberImgProfile')} />
                   </Grid>
                   {!checkForm && (
                     <ErrorMessage>
