@@ -167,7 +167,7 @@ export const CalendarComponent = () => {
     React.useState(0);
   const toast = useToast();
   const [eventStatus, setEventStatus] = React.useState<EventStatusProps | null>(
-    null,
+    null
   );
   const [showModalCanceledEvent, setShowModalCanceledEvent] =
     React.useState(false);
@@ -217,12 +217,12 @@ export const CalendarComponent = () => {
       if (cellPhoneNumberSplit) {
         let areaCode = cellPhoneNumberSplit[0].replace(
           regexpCleanCelPhoneNumber,
-          '',
+          ''
         );
 
         let number = cellPhoneNumberSplit[1].replace(
           regexpCleanCelPhoneNumber,
-          '',
+          ''
         );
 
         phone = {
@@ -499,7 +499,7 @@ export const CalendarComponent = () => {
             value: service._id,
             price: service.price,
           };
-        },
+        }
       );
 
       setServiceOptions(formattedServices);
@@ -545,7 +545,7 @@ export const CalendarComponent = () => {
             end: new Date(Date.parse(end)),
             ...rest,
           };
-        },
+        }
       );
       setAllEvents(events);
     }
@@ -578,7 +578,7 @@ export const CalendarComponent = () => {
       let servicesSelectedValues = services.map(
         (service: ServiceOptionsProps) => {
           return service.price;
-        },
+        }
       );
 
       const totalSum: number = servicesSelectedValues.reduce((sum, i) => {
@@ -816,7 +816,7 @@ export const CalendarComponent = () => {
                             type="checkbox"
                             {...register('allDay')}
                             onChange={(
-                              e: React.ChangeEvent<HTMLInputElement>,
+                              e: React.ChangeEvent<HTMLInputElement>
                             ) => {
                               setServiceAllDay(!serviceAllDay);
                             }}
@@ -1033,14 +1033,14 @@ export const CalendarComponent = () => {
                           >
                             {dataToModalEvent?.payment.paymentUrl.substring(
                               0,
-                              40,
+                              40
                             )}
                             ...
                           </Link>
                           <AiOutlineCopy
                             onClick={() =>
                               copyToClipboard(
-                                dataToModalEvent?.payment.paymentUrl,
+                                dataToModalEvent?.payment.paymentUrl
                               )
                             }
                           />
@@ -1059,7 +1059,7 @@ export const CalendarComponent = () => {
                         {startDateEventById &&
                           format(
                             parseISO(startDateEventById),
-                            'dd/MM/yyyy HH:mm',
+                            'dd/MM/yyyy HH:mm'
                           )}
                       </span>
                     </Styled.EventModalLabel>
@@ -1072,7 +1072,7 @@ export const CalendarComponent = () => {
                             'dd/MM/yyyy HH:mm',
                             {
                               locale: ptBR,
-                            },
+                            }
                           )}
                       </span>
                     </Styled.EventModalLabel>
@@ -1096,7 +1096,7 @@ export const CalendarComponent = () => {
                               </span>
                             </li>
                           );
-                        },
+                        }
                       )}
                     </Styled.EventModalServicesList>
                   </Box>
@@ -1122,10 +1122,10 @@ export const CalendarComponent = () => {
                           dataToModalEvent?.customer.phone.areaCode
                         }) ${dataToModalEvent?.customer.phone.number.substring(
                           0,
-                          5,
+                          5
                         )}-${dataToModalEvent?.customer.phone.number.substring(
                           5,
-                          9,
+                          9
                         )}`}</span>
                       </Styled.EventModalLabel>
                     )}
