@@ -19,6 +19,7 @@ import {
 import BarberRegisterServices from 'components/BarberRegister/BarberServices';
 import { useGetCheckRegisterBarber } from 'components/BarberRegister/BarberContact/api/useGetCheckRegisterBarber';
 import { errorDefaultToast } from 'helpers/Toast/Messages/Default';
+import BarberAllBarbers from 'components/BarberRegister/BarberAllBarbers';
 
 function AdminProfile() {
   const checkBarberIsRegister = useGetCheckRegisterBarber();
@@ -78,6 +79,9 @@ function AdminProfile() {
             <Tab isDisabled={showMessageRequiredRegister}>
               <Styled.TabLabel>Logo</Styled.TabLabel>
             </Tab>
+            <Tab isDisabled={showMessageRequiredRegister}>
+              <Styled.TabLabel>Barbeiros</Styled.TabLabel>
+            </Tab>
           </TabList>
           <TabPanels>
             <TabPanel>
@@ -87,6 +91,9 @@ function AdminProfile() {
               <BarberRegisterServices />
             </TabPanel>
             <TabPanel>3</TabPanel>
+            <TabPanel>
+              <BarberAllBarbers />
+            </TabPanel>
           </TabPanels>
         </Tabs>
       </Styled.ProfileContainer>
