@@ -1,9 +1,9 @@
-import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
-import format from 'date-fns/format';
-import parse from 'date-fns/parse';
-import startOfWeek from 'date-fns/startOfWeek';
-import getDay from 'date-fns/getDay';
-import ptBR from 'date-fns/locale/pt-BR';
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import format from "date-fns/format";
+import parse from "date-fns/parse";
+import startOfWeek from "date-fns/startOfWeek";
+import getDay from "date-fns/getDay";
+import ptBR from "date-fns/locale/pt-BR";
 import {
   Alert,
   AlertIcon,
@@ -33,11 +33,11 @@ import {
   Tooltip,
   useDisclosure,
   useToast,
-} from '@chakra-ui/react';
-import useMedia from 'hooks/useMedia';
-import React, { CSSProperties } from 'react';
-import { SectionTitle } from 'components/BarberRegister/BarberContact/style';
-import * as Styled from './style';
+} from "@chakra-ui/react";
+import useMedia from "hooks/useMedia";
+import React, { CSSProperties } from "react";
+import { SectionTitle } from "components/BarberRegister/BarberContact/style";
+import * as Styled from "./style";
 import {
   CheckBox,
   CheckBoxFlex,
@@ -45,46 +45,46 @@ import {
   FormInputs,
   Input,
   Label,
-} from 'components/StyledComponents/Form/AdminInputs';
-import Select, { StylesConfig } from 'react-select';
-import { registerLocale } from 'react-datepicker';
-import DatePicker from 'react-datepicker';
-import pt from 'date-fns/locale/pt-BR';
-import { parseISO, setHours, setMinutes } from 'date-fns';
-import { http } from '../../../api/http';
-import { SubmitHandler, useForm } from 'react-hook-form';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
-registerLocale('pt', pt);
-import InputMask from 'react-input-mask';
+} from "components/StyledComponents/Form/AdminInputs";
+import Select, { StylesConfig } from "react-select";
+import { registerLocale } from "react-datepicker";
+import DatePicker from "react-datepicker";
+import pt from "date-fns/locale/pt-BR";
+import { parseISO, setHours, setMinutes } from "date-fns";
+import { http } from "../../../api/http";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+registerLocale("pt", pt);
+import InputMask from "react-input-mask";
 import {
   regexpRemoveAllNoIsNumber,
   regexpToEmail,
   regexpCleanCelPhoneNumber,
-} from 'helpers/Form/regexp';
-import { FaExclamationTriangle, FaInfoCircle } from 'react-icons/fa';
-import { useGetBarberServices } from 'components/BarberRegister/BarberServices/api/useGetServices';
-import { useAddEvent } from './api/useNewEvent';
-import SuccessModal from 'components/Modals/SuccessModal';
-import { useGetALlEvents } from './api/useGetAllEvents';
-import { useGetEvent } from './api/useGetEvent';
-import { formatToCurrency } from 'helpers/Currency/formatCurrency';
+} from "helpers/Form/regexp";
+import { FaExclamationTriangle, FaInfoCircle } from "react-icons/fa";
+import { useGetBarberServices } from "components/BarberRegister/BarberServices/api/useGetServices";
+import { useAddEvent } from "./api/useNewEvent";
+import SuccessModal from "components/Modals/SuccessModal";
+import { useGetALlEvents } from "./api/useGetAllEvents";
+import { useGetEvent } from "./api/useGetEvent";
+import { formatToCurrency } from "helpers/Currency/formatCurrency";
 import {
   errorDefaultToast,
   successDefaultToast,
-} from 'helpers/Toast/Messages/Default';
-import axios from 'axios';
-import { BsArrowRight } from 'react-icons/bs';
-import { AiOutlineCopy } from 'react-icons/ai';
+} from "helpers/Toast/Messages/Default";
+import axios from "axios";
+import { BsArrowRight } from "react-icons/bs";
+import { AiOutlineCopy } from "react-icons/ai";
 import {
   erroCustomizableToast,
   successCustomizableToast,
-} from 'helpers/Toast/Messages/Customizable';
-import { useDeleteEvent } from './api/useDeleteEvent';
-import { useGetCheckRegisterBarber } from 'components/BarberRegister/BarberContact/api/useGetCheckRegisterBarber';
-import Link from 'next/link';
+} from "helpers/Toast/Messages/Customizable";
+import { useDeleteEvent } from "./api/useDeleteEvent";
+import { useGetCheckRegisterBarber } from "components/BarberRegister/BarberContact/api/useGetCheckRegisterBarber";
+import Link from "next/link";
 
 const locales = {
-  'pt-BR': ptBR,
+  "pt-BR": ptBR,
 };
 
 const localizer = dateFnsLocalizer({
@@ -135,8 +135,8 @@ interface EventStatusProps {
 }
 
 export const CalendarComponent = () => {
-  const mobile = useMedia('(max-width: 769px)');
-  const mobileM = useMedia('(max-width: 380px)');
+  const mobile = useMedia("(max-width: 769px)");
+  const mobileM = useMedia("(max-width: 380px)");
   const [showModalEvent, setShowModalEvent] = React.useState(false);
   const [dataToModalEvent, setDataToModalEvent] =
     React.useState<dataModalEventPros>();
@@ -146,7 +146,7 @@ export const CalendarComponent = () => {
   const [startTime, setStartTime] = React.useState(new Date());
   const [endTime, setEndTime] = React.useState(new Date());
   const queryClient = useQueryClient();
-  const [onlinePayment, setOnlinePayment] = React.useState('true');
+  const [onlinePayment, setOnlinePayment] = React.useState("true");
   const [services, setServices] = React.useState([]);
   const [checkEmail, setCheckEmail] = React.useState(true);
   const [serviceAllDay, setServiceAllDay] = React.useState(false);
@@ -182,9 +182,9 @@ export const CalendarComponent = () => {
     if (itemToCopy) {
       navigator.clipboard.writeText(itemToCopy).then(() => {
         toast({
-          status: 'success',
-          title: 'Copiado com sucesso!',
-          description: 'Link copiado com sucesso para o clip board',
+          status: "success",
+          title: "Copiado com sucesso!",
+          description: "Link copiado com sucesso para o clip board",
           ...successCustomizableToast,
         });
 
@@ -210,19 +210,19 @@ export const CalendarComponent = () => {
     if (data.cellphone) {
       // quebrando o número numa array item[0] é o dd o item[1] é o número
       // em seguida limpando os caracteres especiais para mandar para o back
-      let cellPhoneNumberSplit = data.cellphone?.split(' ');
+      let cellPhoneNumberSplit = data.cellphone?.split(" ");
 
       // verificando se não o typeScript fica reclamando
       //  montando o objeto phone (dd + numero)
       if (cellPhoneNumberSplit) {
         let areaCode = cellPhoneNumberSplit[0].replace(
           regexpCleanCelPhoneNumber,
-          ''
+          ""
         );
 
         let number = cellPhoneNumberSplit[1].replace(
           regexpCleanCelPhoneNumber,
-          ''
+          ""
         );
 
         phone = {
@@ -235,8 +235,8 @@ export const CalendarComponent = () => {
     let identification = {};
     if (data.documentNumber) {
       identification = {
-        type: 'CPF',
-        number: data.documentNumber.replace(regexpRemoveAllNoIsNumber, ''),
+        type: "CPF",
+        number: data.documentNumber.replace(regexpRemoveAllNoIsNumber, ""),
       };
     }
 
@@ -260,7 +260,7 @@ export const CalendarComponent = () => {
           //   por hora vai ficar fixo cpf porém pode der outro documento para identificar o usuário futuramente
           identification,
         },
-        hasPayment: onlinePayment === 'true',
+        hasPayment: onlinePayment === "true",
       };
 
       useNewEventMutation.mutate(event);
@@ -280,7 +280,7 @@ export const CalendarComponent = () => {
   const [loadingModaEvent, setLoadingModaEvent] =
     React.useState<boolean>(false);
   async function getEventById(id: string) {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     setEventToDeleteId(id);
 
     await axios
@@ -298,7 +298,7 @@ export const CalendarComponent = () => {
         }
       })
       .catch((err) => {
-        toast({ status: 'error', ...errorDefaultToast });
+        toast({ status: "error", ...errorDefaultToast });
       });
     setLoadingModaEvent(false);
   }
@@ -323,39 +323,39 @@ export const CalendarComponent = () => {
 
   function defineStatusEvent(status: string) {
     switch (status) {
-      case 'pending':
+      case "pending":
         setEventStatus({
-          color: 'gray',
-          statusText: 'Pendente',
+          color: "gray",
+          statusText: "Pendente",
         });
         break;
-      case 'paid':
+      case "paid":
         setEventStatus({
-          color: 'green',
-          statusText: 'Aprovado',
+          color: "green",
+          statusText: "Pago",
         });
         break;
-      case 'recused':
+      case "recused":
         setEventStatus({
-          color: 'red',
-          statusText: 'Cancelado',
+          color: "red",
+          statusText: "Cancelado",
         });
         break;
     }
   }
 
   const messages = {
-    allDay: 'Dia Inteiro',
-    previous: '<',
-    next: '>',
-    today: 'Hoje',
-    month: 'Mês',
-    week: 'Semana',
-    day: 'Dia',
-    agenda: 'Agenda',
-    date: 'Data',
-    time: 'Hora',
-    event: 'Evento',
+    allDay: "Dia Inteiro",
+    previous: "<",
+    next: ">",
+    today: "Hoje",
+    month: "Mês",
+    week: "Semana",
+    day: "Dia",
+    agenda: "Agenda",
+    date: "Data",
+    time: "Hora",
+    event: "Evento",
     showMore: (total: number) => `+ (${total}) Eventos`,
   };
 
@@ -363,42 +363,42 @@ export const CalendarComponent = () => {
   const colourStyles = {
     control: (styles: any) => ({
       ...styles,
-      backgroundColor: '#ffffff',
-      border: '2px solid #181b23',
-      color: '#000000',
-      minHeight: '44px',
-      minWidth: '120px',
-      marginTop: '10px',
-      ':hover': {
-        borderColor: '#181b23',
+      backgroundColor: "#ffffff",
+      border: "2px solid #181b23",
+      color: "#000000",
+      minHeight: "44px",
+      minWidth: "120px",
+      marginTop: "10px",
+      ":hover": {
+        borderColor: "#181b23",
       },
     }),
     option: (styles: any) => {
       return {
-        backgroundColor: '#ffffff',
-        cursor: 'pointer',
-        padding: '8px',
-        ':hover': {
-          backgroundColor: '#ffdd00',
+        backgroundColor: "#ffffff",
+        cursor: "pointer",
+        padding: "8px",
+        ":hover": {
+          backgroundColor: "#ffdd00",
         },
-        fontSize: '16px',
-        fontFamily: 'Roboto, sans-serif',
-        fontWeight: '400',
-        transition: '0.2s',
+        fontSize: "16px",
+        fontFamily: "Roboto, sans-serif",
+        fontWeight: "400",
+        transition: "0.2s",
       };
     },
     multiValue: (styles: any) => {
       return {
         ...styles,
-        backgroundColor: '#ffdd00',
+        backgroundColor: "#ffdd00",
       };
     },
     multiValueLabel: (styles: any) => ({
       ...styles,
-      color: '#000000',
-      fontSize: '12px',
-      fontWeight: 'normal',
-      fontFamily: 'Roboto, sans-serif',
+      color: "#000000",
+      fontSize: "12px",
+      fontWeight: "normal",
+      fontFamily: "Roboto, sans-serif",
     }),
   };
 
@@ -418,7 +418,7 @@ export const CalendarComponent = () => {
 
     // horário de entrada + data
     let mountedStartDate = `${startDateYear}-${startDateMonth}-${startDateDay} ${startTimeHours}:${
-      startTimeMinutes !== 0 ? startTimeMinutes : '00'
+      startTimeMinutes !== 0 ? startTimeMinutes : "00"
     }:00`;
 
     // horário de saída + data
@@ -432,11 +432,11 @@ export const CalendarComponent = () => {
       let endDateDay = endDate.getDate();
 
       mountedEndDate = `${endDateYear}-${endDateMonth}-${endDateDay} ${endTimeHours}:${
-        endTimeMinutes !== 0 ? endTimeMinutes : '00'
+        endTimeMinutes !== 0 ? endTimeMinutes : "00"
       }:00`;
     } else {
       mountedEndDate = `${startDateYear}-${startDateMonth}-${startDateDay} ${endTimeHours}:${
-        endTimeMinutes !== 0 ? endTimeMinutes : '00'
+        endTimeMinutes !== 0 ? endTimeMinutes : "00"
       }:00`;
     }
 
@@ -475,11 +475,11 @@ export const CalendarComponent = () => {
   }
 
   function resetModalValues() {
-    setValue('name', '');
-    setValue('cellphone', '');
-    setValue('email', '');
-    setValue('documentNumber', '');
-    setOnlinePayment('true');
+    setValue("name", "");
+    setValue("cellphone", "");
+    setValue("email", "");
+    setValue("documentNumber", "");
+    setOnlinePayment("true");
     setServices([]);
   }
 
@@ -516,13 +516,13 @@ export const CalendarComponent = () => {
   // na adição de um novo evento - erro
   React.useEffect(() => {
     if (useNewEventMutation.isError) {
-      toast({ status: 'error', ...errorDefaultToast });
+      toast({ status: "error", ...errorDefaultToast });
     }
   }, [useNewEventMutation.isError, toast]);
 
   // efeito para verificar os campos que não são required
   React.useEffect(() => {
-    if (onlinePayment === 'true') {
+    if (onlinePayment === "true") {
       setAllFormIsRequired(true);
     } else {
       setAllFormIsRequired(false);
@@ -561,14 +561,14 @@ export const CalendarComponent = () => {
       useGetAllEventsMutation.error.response.status === 400
     ) {
       toast({
-        status: 'warning',
-        title: 'Ops! Você não concluiu o cadastro da sua barbearia',
+        status: "warning",
+        title: "Ops! Você não concluiu o cadastro da sua barbearia",
         description:
-          'Para visualizar os seus agendamentos, marcar um evento, complete o cadastro da sua barbearia',
+          "Para visualizar os seus agendamentos, marcar um evento, complete o cadastro da sua barbearia",
         ...erroCustomizableToast,
       });
     } else if (useGetAllEventsMutation.isError) {
-      toast({ status: 'error', ...errorDefaultToast });
+      toast({ status: "error", ...errorDefaultToast });
     }
   }, [useGetAllEventsMutation.isError, toast, showMessageRequiredRegister]);
 
@@ -596,7 +596,7 @@ export const CalendarComponent = () => {
   // efeito para deletar um event
   React.useEffect(() => {
     if (useDeleteEventMutation.isSuccess) {
-      toast({ status: 'success', ...successDefaultToast });
+      toast({ status: "success", ...successDefaultToast });
       setShowModalCanceledEvent(false);
       setShowModalEvent(false);
     }
@@ -610,7 +610,7 @@ export const CalendarComponent = () => {
         setShowMessageRequiredRegister(true);
       } else {
         setShowMessageRequiredRegister(false);
-        toast({ status: 'error', ...errorDefaultToast });
+        toast({ status: "error", ...errorDefaultToast });
       }
     }
   }, [checkBarberIsRegister.isError, checkBarberIsRegister.error, toast]);
@@ -633,7 +633,7 @@ export const CalendarComponent = () => {
           />
         </Grid>
       ) : (
-        <Box padding={mobile ? '40px 20px 40px 20px' : '40px 60px 60px 60px'}>
+        <Box padding={mobile ? "40px 20px 40px 20px" : "40px 60px 60px 60px"}>
           {/* big calendar */}
           <Box>
             <SectionTitle>Marcar horário?</SectionTitle>
@@ -691,7 +691,7 @@ export const CalendarComponent = () => {
           </Box>
           {/* modal para adicionar um evento */}
           <Modal
-            size={(mobile && !mobileM && 'sm') || (mobileM && 'xs') || '4xl'}
+            size={(mobile && !mobileM && "sm") || (mobileM && "xs") || "4xl"}
             isOpen={showModalAddEvent}
             onClose={() => setShowModalAddEvent(false)}
           >
@@ -753,7 +753,7 @@ export const CalendarComponent = () => {
                           Nome do cliente *
                           <Input
                             type="text"
-                            {...register('name', { required: true })}
+                            {...register("name", { required: true })}
                           />
                           {errors.name && (
                             <ErrorMessage>
@@ -784,7 +784,7 @@ export const CalendarComponent = () => {
                       </Box>
                       <Box mt="20px">
                         <Label>
-                          {serviceAllDay ? 'Data de inicio' : 'Data'} *
+                          {serviceAllDay ? "Data de inicio" : "Data"} *
                         </Label>
                         <DatePicker
                           dateFormat="dd/MM/yyyy"
@@ -814,7 +814,7 @@ export const CalendarComponent = () => {
                         <CheckBoxFlex>
                           <CheckBox
                             type="checkbox"
-                            {...register('allDay')}
+                            {...register("allDay")}
                             onChange={(
                               e: React.ChangeEvent<HTMLInputElement>
                             ) => {
@@ -854,14 +854,14 @@ export const CalendarComponent = () => {
                       <Box mt="20px">
                         <FormInputs>
                           <label id="mask">
-                            Celular {allFormIsRequired && '*'}
+                            Celular {allFormIsRequired && "*"}
                             <InputMask
                               className="mask"
-                              mask={'(99) 99999-9999'}
+                              mask={"(99) 99999-9999"}
                               alwaysShowMask={false}
-                              type={'tel'}
+                              type={"tel"}
                               placeholder="(99) 99999-9999"
-                              {...register('cellphone', {
+                              {...register("cellphone", {
                                 required: allFormIsRequired,
                               })}
                             />
@@ -879,10 +879,10 @@ export const CalendarComponent = () => {
                           onBlur={(e) => handleCheckEmail(e)}
                           onChange={handleChangeCheckEmail}
                         >
-                          Email {allFormIsRequired && '*'}
+                          Email {allFormIsRequired && "*"}
                           <Input
                             type="email"
-                            {...register('email', {
+                            {...register("email", {
                               required: allFormIsRequired,
                             })}
                           />
@@ -903,14 +903,14 @@ export const CalendarComponent = () => {
                       <Box mt="20px">
                         <FormInputs>
                           <label id="mask">
-                            Cpf {allFormIsRequired && '*'}
+                            Cpf {allFormIsRequired && "*"}
                             <InputMask
                               className="mask"
-                              mask={'999.999.999-99'}
+                              mask={"999.999.999-99"}
                               alwaysShowMask={false}
-                              type={'text'}
+                              type={"text"}
                               placeholder="000.000.000-00"
-                              {...register('documentNumber', {
+                              {...register("documentNumber", {
                                 required: allFormIsRequired,
                               })}
                             />
@@ -930,8 +930,8 @@ export const CalendarComponent = () => {
                     <AlertIcon />
                     <Styled.HelpRequiredInputText>
                       {allFormIsRequired
-                        ? 'Preencha todos os campos acima para adicionar um evento.'
-                        : 'Somente os campos com anterísticos são necessários para criar este evento'}
+                        ? "Preencha todos os campos acima para adicionar um evento."
+                        : "Somente os campos com anterísticos são necessários para criar este evento"}
                     </Styled.HelpRequiredInputText>
                   </Alert>
                   <Styled.ModalEventButtonFlex>
@@ -955,7 +955,7 @@ export const CalendarComponent = () => {
                       {useNewEventMutation.isLoading ? (
                         <Spinner color="#181b23" />
                       ) : (
-                        'Marcar'
+                        "Marcar"
                       )}
                     </Styled.ModaEventButton>
                   </Styled.ModalEventButtonFlex>
@@ -973,7 +973,7 @@ export const CalendarComponent = () => {
             </ModalContent>
           </Modal>
           <Modal
-            size={mobile ? 'xs' : '3xl'}
+            size={mobile ? "xs" : "3xl"}
             isOpen={showModalEvent}
             onClose={() => setShowModalEvent(false)}
             isCentered
@@ -1007,7 +1007,7 @@ export const CalendarComponent = () => {
                       <Flex
                         gap="8px"
                         alignItems="center"
-                        flexWrap={mobile ? 'wrap' : 'nowrap'}
+                        flexWrap={mobile ? "wrap" : "nowrap"}
                       >
                         Informações de pagamento:
                         {dataToModalEvent?.payment ? (
@@ -1015,14 +1015,14 @@ export const CalendarComponent = () => {
                             {eventStatus?.statusText}
                           </Tag>
                         ) : (
-                          <Tag colorScheme="green">Pagar no local</Tag>
+                          <Tag colorScheme="blue">Pagar no local</Tag>
                         )}
                       </Flex>
                     </Styled.EventModalSectionTitle>
                     {dataToModalEvent?.payment && (
                       <Styled.EventModalLabel>
                         <span className="flex">
-                          Link de pagamento{' '}
+                          Link de pagamento{" "}
                           <BsArrowRight color="#181b23" size="16" />
                         </span>
                         <span className="link">
@@ -1059,7 +1059,7 @@ export const CalendarComponent = () => {
                         {startDateEventById &&
                           format(
                             parseISO(startDateEventById),
-                            'dd/MM/yyyy HH:mm'
+                            "dd/MM/yyyy HH:mm"
                           )}
                       </span>
                     </Styled.EventModalLabel>
@@ -1069,7 +1069,7 @@ export const CalendarComponent = () => {
                         {endDateEventById &&
                           format(
                             parseISO(endDateEventById),
-                            'dd/MM/yyyy HH:mm',
+                            "dd/MM/yyyy HH:mm",
                             {
                               locale: ptBR,
                             }
@@ -1132,7 +1132,7 @@ export const CalendarComponent = () => {
                   </Box>
                   {/* cancelar agendamento */}
                   <Box pb="20px">
-                    <Styled.EventModalSectionTitle beforeColor={'#d00000'}>
+                    <Styled.EventModalSectionTitle beforeColor={"#d00000"}>
                       Cancelar agendamento?
                     </Styled.EventModalSectionTitle>
                     <Styled.ModalEventButtonCanceledEvent
@@ -1147,7 +1147,7 @@ export const CalendarComponent = () => {
           </Modal>
           {/* modal para cancelar um evento */}
           <Modal
-            size={mobile ? 'xs' : 'lg'}
+            size={mobile ? "xs" : "lg"}
             isOpen={showModalCanceledEvent}
             onClose={() => setShowModalCanceledEvent(false)}
             isCentered
@@ -1160,7 +1160,7 @@ export const CalendarComponent = () => {
               <ModalCloseButton />
               <ModalBody>
                 <Styled.ModalCanceledEventText>
-                  tem certeza que deseja cancelar o event{' '}
+                  tem certeza que deseja cancelar o event{" "}
                   <span className="event">{`${eventToCanceled}?`}</span> Essa
                   ação, ira remover o evento da sua agenda
                 </Styled.ModalCanceledEventText>
@@ -1179,7 +1179,7 @@ export const CalendarComponent = () => {
                     {useDeleteEventMutation.isLoading ? (
                       <Spinner color="#181b23" />
                     ) : (
-                      'Cancelar'
+                      "Cancelar"
                     )}
                   </Styled.ModalEventButtonCanceledEvent>
                 </Flex>
