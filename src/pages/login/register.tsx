@@ -1,10 +1,10 @@
-import React from 'react';
-import Image from 'next/image';
-import BarberLogo from '../../assets/barber-logo.png';
+import React from "react";
+import Image from "next/image";
+import BarberLogo from "../../assets/barber-logo.png";
 // importando os estilos gerais do formulário de login
-import * as StyledLogin from '../../styles/Login/login';
-import { FaExclamationTriangle, FaEye } from 'react-icons/fa';
-import LoginButton from '../../components/Form/LoginButton';
+import * as StyledLogin from "../../styles/Login/login";
+import { FaExclamationTriangle, FaEye } from "react-icons/fa";
+import LoginButton from "../../components/Form/LoginButton";
 import {
   Tooltip,
   Button,
@@ -17,34 +17,34 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
-} from '@chakra-ui/react';
+} from "@chakra-ui/react";
 import {
   Input,
   Label,
   ErrorMessage,
   InputIcon,
-} from '../../styles/Login/login';
-import { FaInfoCircle } from 'react-icons/fa';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import Link from 'next/link';
-import InputMask from 'react-input-mask';
-import LoginHeader from '../../components/LoginHeader';
-import { useQueryClient, useMutation } from 'react-query';
-import { http } from '../../../api/http';
-import Router from 'next/router';
+} from "../../styles/Login/login";
+import { FaInfoCircle } from "react-icons/fa";
+import { useForm, SubmitHandler } from "react-hook-form";
+import Link from "next/link";
+import InputMask from "react-input-mask";
+import LoginHeader from "../../components/LoginHeader";
+import { useQueryClient, useMutation } from "react-query";
+import { http } from "../../../api/http";
+import Router from "next/router";
 import {
   regexpCleanCelPhoneNumber,
   regexpRemoveAllNoIsNumber,
   regexpToEmail,
-} from 'helpers/Form/regexp';
-import { errorDefaultToast } from 'helpers/Toast/Messages/Default';
+} from "helpers/Form/regexp";
+import { errorDefaultToast } from "helpers/Toast/Messages/Default";
 import {
   CheckBox,
   CheckBoxFlex,
-} from 'components/StyledComponents/Form/AdminInputs';
-import { SectionTitle } from 'components/BarberRegister/style';
-import useMedia from 'hooks/useMedia';
-import { ScrollModalTerms } from 'styles/Login/ModalTerms';
+} from "components/StyledComponents/Form/AdminInputs";
+import { SectionTitle } from "components/BarberRegister/style";
+import useMedia from "hooks/useMedia";
+import { ScrollModalTerms } from "styles/Login/ModalTerms";
 
 type Inputs = {
   name: string;
@@ -56,7 +56,7 @@ type Inputs = {
 };
 
 const createUser = async (data: Inputs) => {
-  const { data: response } = await http.post('/auth/register', data);
+  const { data: response } = await http.post("/auth/register", data);
   return response;
 };
 
@@ -71,7 +71,7 @@ function Register() {
   const toast = useToast();
   const [showModalTerm, setShowModalTerm] = React.useState(false);
   const [agreeTerms, setAgreeTerms] = React.useState(false);
-  const mobile = useMedia('(max-width: 769px)');
+  const mobile = useMedia("(max-width: 769px)");
   const [agreeTermsErrorMessage, setAgreeTermsErrorMessage] =
     React.useState(false);
 
@@ -84,21 +84,21 @@ function Register() {
 
   const { mutate, isLoading } = useMutation(createUser, {
     onSuccess: (data) => {
-      localStorage.setItem('token', data.token);
-      Router.push('/profile');
+      localStorage.setItem("token", data.token);
+      Router.push("/profile");
     },
     onError: (err: any) => {
-      toast({ status: 'error', ...errorDefaultToast });
+      toast({ status: "error", ...errorDefaultToast });
     },
     onSettled: () => {
-      queryClient.invalidateQueries('create');
+      queryClient.invalidateQueries("create");
     },
   });
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     // quebrando o número numa array item[0] é o dd o item[1] é o número
     // em seguida limpando os caracteres especiais para mandar para o back
-    let cellPhoneNumberSplit = data.cellphone?.split(' ');
+    let cellPhoneNumberSplit = data.cellphone?.split(" ");
     let phone = {};
 
     // verificando se não o typeScript fica reclamando
@@ -106,12 +106,12 @@ function Register() {
     if (cellPhoneNumberSplit) {
       let areaCode = cellPhoneNumberSplit[0].replace(
         regexpCleanCelPhoneNumber,
-        ''
+        ""
       );
 
       let number = cellPhoneNumberSplit[1].replace(
         regexpCleanCelPhoneNumber,
-        ''
+        ""
       );
 
       phone = {
@@ -126,7 +126,7 @@ function Register() {
       name: data.name,
       documentNumber: data.documentNumber.replace(
         regexpRemoveAllNoIsNumber,
-        ''
+        ""
       ),
       phone,
     };
@@ -191,7 +191,7 @@ function Register() {
             <form onSubmit={handleSubmit(onSubmit)}>
               <Label>
                 Nome
-                <Input type="text" {...register('name', { required: true })} />
+                <Input type="text" {...register("name", { required: true })} />
                 {errors.name && (
                   <ErrorMessage>
                     <FaExclamationTriangle />
@@ -206,7 +206,7 @@ function Register() {
                 Email
                 <Input
                   type="email"
-                  {...register('email', { required: true })}
+                  {...register("email", { required: true })}
                 />
                 {errors.email && (
                   <ErrorMessage>
@@ -224,11 +224,11 @@ function Register() {
               <label id="CPF">
                 Cpf
                 <InputMask
-                  mask={'999.999.999-99'}
+                  mask={"999.999.999-99"}
                   alwaysShowMask={false}
-                  type={'text'}
+                  type={"text"}
                   placeholder="000.000.000-00"
-                  {...register('documentNumber', { required: true })}
+                  {...register("documentNumber", { required: true })}
                 />
               </label>
               {errors.documentNumber && (
@@ -255,11 +255,11 @@ function Register() {
                   </button>
                 </Tooltip>
                 <InputMask
-                  mask={'(99) 99999-9999'}
+                  mask={"(99) 99999-9999"}
                   alwaysShowMask={false}
-                  type={'tel'}
+                  type={"tel"}
                   placeholder="(99) 99999-9999"
-                  {...register('cellphone', { required: true })}
+                  {...register("cellphone", { required: true })}
                 />
               </label>
               {errors.cellphone && (
@@ -287,8 +287,8 @@ function Register() {
                 </Tooltip>
                 <InputIcon>
                   <Input
-                    type={showPassword ? 'text' : 'password'}
-                    {...register('password', {
+                    type={showPassword ? "text" : "password"}
+                    {...register("password", {
                       required: true,
                       minLength: 8,
                     })}
@@ -324,8 +324,8 @@ function Register() {
                 <InputIcon disabled={disabledConfirmPassword}>
                   <Input
                     disabled={disabledConfirmPassword}
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    {...register('confirmPassword', {
+                    type={showConfirmPassword ? "text" : "password"}
+                    {...register("confirmPassword", {
                       required: true,
                       minLength: 8,
                     })}
@@ -359,7 +359,7 @@ function Register() {
                 <Text color="#ffffff">termos de uso</Text>
                 {/* modal dos termos */}
                 <Modal
-                  size={mobile ? 'xs' : '3xl'}
+                  size={mobile ? "xs" : "3xl"}
                   isOpen={showModalTerm}
                   onClose={() => setShowModalTerm(false)}
                 >
@@ -538,7 +538,7 @@ function Register() {
                   termos, para finzalizar seu cadastro.
                 </ErrorMessage>
               )}
-              <LoginButton loading={isLoading} text="Entrar" type="submit" />
+              <LoginButton loading={isLoading} text="Cadastrar" type="submit" />
             </form>
             <StyledLogin.HaveRegisterText>
               Já possui registo? <Link href="/login">entrar</Link>
