@@ -50,11 +50,12 @@ import {
   errorDefaultToast,
   successDefaultToast,
 } from 'helpers/Toast/Messages/Default';
+import Image from 'next/image';
 
 type Inputs = {
   comission: number | string;
   name: string;
-  barberImgProfile: string;
+  barberImgProfile: string | ArrayBuffer | null;
 };
 
 interface BarberProps {
@@ -79,6 +80,8 @@ const BarberAllBarbers = () => {
   const [btnLoading, setBtnLoading] = React.useState<boolean>(false);
   const [deleteBarberModal, setDeleteBarberModal] = React.useState(false);
   const toast = useToast();
+  const [barberPreviewImage, setBarberPreviewImage] =
+    React.useState<string>('');
 
   // apis
   const addBarberMutation = useAddBarber();
@@ -103,15 +106,17 @@ const BarberAllBarbers = () => {
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
     if (!barberDelete) {
-      if (data.name && data.comission) {
+      if (data.name && data.comission && data.barberImgProfile) {
         setCheckForm(true);
         let comissionToString = String(data.comission);
         let numberComission = Number(comissionToString.replace(',', '.'));
 
+        console.log('%c⧭', 'color: #007300', data);
         if (!editBarber) {
           addBarberMutation.mutate({
             comission: numberComission,
             name: data.name,
+            //  barberProfileImage: data.barberImgProfile
           });
         }
 
@@ -121,6 +126,7 @@ const BarberAllBarbers = () => {
               _id: barberToEdit._id,
               name: data.name,
               comission: numberComission,
+              //  barberProfileImage: data.barberImgProfile
             });
           }
         }
@@ -152,6 +158,8 @@ const BarberAllBarbers = () => {
     setValue('name', '');
     setValue('comission', 0.0);
     setComission(0.0);
+    setBarberPreviewImage('');
+    setValue('barberImgProfile', null);
   }
 
   function resetServiceDelete() {
@@ -169,6 +177,11 @@ const BarberAllBarbers = () => {
     setValue('comission', barber.comission);
     setComission(barber.comission);
     setIsOpenBarberModal(true);
+    // a lógica para editar vai ser o que estão entre parenteses, precisa dar um set no value e no preview da imagem, por hr para não bugar vamos só retirar a imagem da edição
+    // setBarberPreviewImage(barber.barberProfileImage);
+    // setValue('barberImgProfile', barber.barberProfileImage);
+    setBarberPreviewImage('');
+    setValue('barberImgProfile', null);
   }
 
   function handleDeleteBarber(barber: any) {
@@ -189,6 +202,33 @@ const BarberAllBarbers = () => {
 
   function handleCloseDeleteBarberModal() {
     setDeleteBarberModal(false);
+  }
+
+  function handleConvertImage(e: React.ChangeEvent<HTMLInputElement>) {
+    // 1- pegando o input que carrega  imagem pois no event ele não vem completo
+    const inputImage = (
+      document.getElementById('barberImage') as HTMLInputElement | null
+    )?.files;
+
+    // se existir realmente uma imagem vamos fazer a lógica para para transformar a imagem em base64
+    if (inputImage && inputImage.length) {
+      // pegando a imagem dentro da array filed
+      let barberImage = inputImage[0];
+      let readBarberImage = new FileReader();
+      readBarberImage.onload = function (loadedBarberImage) {
+        if (loadedBarberImage.target) {
+          // imagem em base 64
+          let barberImageBase64 = loadedBarberImage.target.result;
+          setValue('barberImgProfile', barberImageBase64);
+
+          // tem que verificar se existe pois o src de uma imagem não aceita null e tem que por o toString pois o src da imagem não aceita uma ArrayBuffer
+          if (barberImageBase64) {
+            setBarberPreviewImage(barberImageBase64.toString());
+          }
+        }
+      };
+      readBarberImage.readAsDataURL(barberImage);
+    }
   }
 
   // efeito geral dos loading do botão
@@ -290,8 +330,7 @@ const BarberAllBarbers = () => {
                       return (
                         <Tr key={i}>
                           <Td>{item.name}</Td>
-                          {/* <Td>{formatToCurrency(item.comission)}</Td> */}
-                          <Td>1</Td>
+                          <Td>{formatToCurrency(item.comission)}</Td>
                           <Td isNumeric>
                             <Styled.TableSvg>
                               <BsFillPencilFill
@@ -406,7 +445,29 @@ const BarberAllBarbers = () => {
                         </InputRightElement>
                       </InputGroup>
                     </label>
-                    <input type="file" {...register('barberImgProfile')} />
+
+                    <label htmlFor="barberImage">
+                      <Text
+                        fontFamily="Poppins, sans-serif"
+                        fontWeight="400"
+                        color="#000000"
+                        fontSize={mobile ? '16px' : '18px'}
+                        mb="8px"
+                      >
+                        Imagem para perfil
+                      </Text>
+                    </label>
+                    <input
+                      id="barberImage"
+                      type="file"
+                      onChange={(e) => handleConvertImage(e)}
+                    />
+                    {barberPreviewImage.length > 0 && (
+                      <Styled.BarberPreviewProfileImage>
+                        {/* tem que usar uma tag html e não a do next se não rola conflito, pelo src, se um base64 */}
+                        <img src={barberPreviewImage} alt="barberImage" />
+                      </Styled.BarberPreviewProfileImage>
+                    )}
                   </Grid>
                   {!checkForm && (
                     <ErrorMessage>
