@@ -39,9 +39,9 @@ function AdminDrawer() {
           <DrawerBody>
             <Styled.DrawerItemList>
               <Styled.DrawerItemFlex>
-                <Link href="/profile">
-                  <GrUserSettings size="18" color="#00000" />
-                  Perfil / Barbearia
+                <Link href="/profile/customers">
+                  <FiUsers size="18" color="#00000" />
+                  <p>Painel</p>
                 </Link>
               </Styled.DrawerItemFlex>
               <Styled.DrawerItemFlex>
@@ -50,10 +50,11 @@ function AdminDrawer() {
                   <p>Agendamentos</p>
                 </Link>
               </Styled.DrawerItemFlex>
+
               <Styled.DrawerItemFlex>
-                <Link href="/profile/customers">
-                  <FiUsers size="18" color="#00000" />
-                  <p>Clientes</p>
+                <Link href="/profile">
+                  <GrUserSettings size="18" color="#00000" />
+                  Configurações
                 </Link>
               </Styled.DrawerItemFlex>
               {mobile && (
