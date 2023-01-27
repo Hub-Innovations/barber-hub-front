@@ -87,10 +87,21 @@ export const AddFirstItemTitleCallBack = styled.p`
 `;
 
 export const BarberPreviewProfileImage = styled.div`
-  max-width: 200px;
-  max-height: 200px;
+  /* sempre lembrar de alinhar esse tamanho com os tamanhos dos cards na tela da barbearia */
+  max-width: 140px;
+  max-height: 120px;
+  margin-top: 8px;
 
   img {
     max-width: 100%;
+    height: 120px;
+  }
+`;
+
+export const FormGap = styled.div`
+  display: grid;
+
+  label + label {
+    margin-top: 20px;
   }
 `;

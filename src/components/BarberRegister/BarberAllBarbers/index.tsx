@@ -399,7 +399,7 @@ const BarberAllBarbers = () => {
                 }}
               >
                 <ModalBody>
-                  <Grid gap="20px">
+                  <Styled.FormGap>
                     <Label>
                       Nome:
                       <Input
@@ -468,7 +468,7 @@ const BarberAllBarbers = () => {
                         <img src={barberPreviewImage} alt="barberImage" />
                       </Styled.BarberPreviewProfileImage>
                     )}
-                  </Grid>
+                  </Styled.FormGap>
                   {!checkForm && (
                     <ErrorMessage>
                       <FaExclamationTriangle color="#d00000" />
