@@ -5,6 +5,10 @@ export const TableTitleHead = styled.span`
   font-size: 18px;
   color: #000000;
   font-weight: 600;
+
+  @media (max-width: 769px) {
+    font-size: 14px;
+  }
 `;
 
 export const TableItemText = styled.span`
