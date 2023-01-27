@@ -85,3 +85,12 @@ export const AddFirstItemTitleCallBack = styled.p`
   font-weight: 600;
   margin-top: 8px;
 `;
+
+export const BarberPreviewProfileImage = styled.div`
+  max-width: 200px;
+  max-height: 200px;
+
+  img {
+    max-width: 100%;
+  }
+`;
