@@ -54,6 +54,7 @@ function AdminProfile() {
             <Alert status="warning">
               <AlertIcon />
               <Text
+                data-test="cadastro:text"
                 fontFamily="Roboto, sans-serif"
                 fontSize="16px"
                 lineHeight="1.4"
