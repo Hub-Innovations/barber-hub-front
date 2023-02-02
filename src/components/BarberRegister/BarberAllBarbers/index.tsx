@@ -116,7 +116,7 @@ const BarberAllBarbers = () => {
           addBarberMutation.mutate({
             comission: numberComission,
             name: data.name,
-            //  barberProfileImage: data.barberImgProfile
+            picture: data.barberImgProfile,
           });
         }
 
@@ -126,7 +126,7 @@ const BarberAllBarbers = () => {
               _id: barberToEdit._id,
               name: data.name,
               comission: numberComission,
-              //  barberProfileImage: data.barberImgProfile
+              picture: data.barberImgProfile,
             });
           }
         }
@@ -177,11 +177,8 @@ const BarberAllBarbers = () => {
     setValue('comission', barber.comission);
     setComission(barber.comission);
     setIsOpenBarberModal(true);
-    // a lógica para editar vai ser o que estão entre parenteses, precisa dar um set no value e no preview da imagem, por hr para não bugar vamos só retirar a imagem da edição
-    // setBarberPreviewImage(barber.barberProfileImage);
-    // setValue('barberImgProfile', barber.barberProfileImage);
-    setBarberPreviewImage('');
-    setValue('barberImgProfile', null);
+    setBarberPreviewImage(barber.picture);
+    setValue('barberImgProfile', barber.picture);
   }
 
   function handleDeleteBarber(barber: any) {
