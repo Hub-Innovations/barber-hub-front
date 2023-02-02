@@ -82,6 +82,8 @@ import {
 import { useDeleteEvent } from './api/useDeleteEvent';
 import { useGetCheckRegisterBarber } from 'components/BarberRegister/BarberContact/api/useGetCheckRegisterBarber';
 import Link from 'next/link';
+import { useGetAllBarbers } from './api/useGetBarbers';
+import Image from 'next/image';
 
 const locales = {
   'pt-BR': ptBR,
@@ -123,6 +125,10 @@ interface dataModalEventPros {
       number: string;
     };
   };
+  barberName: {
+    label: string;
+    value: string;
+  };
 }
 
 interface serviceProps {
@@ -157,9 +163,15 @@ export const CalendarComponent = () => {
     React.useState(false);
   const [allFormIsRequired, setAllFormIsRequired] = React.useState(true);
   const [addEventSuccess, setAddEventSuccessModal] = React.useState(false);
+  const [barberOptions, setBarberOptions] = React.useState([]);
+  const [barber, setBarber] = React.useState<{
+    label: string;
+    value: string;
+  } | null>(null);
   const useNewEventMutation = useAddEvent();
   const useGetAllEventsMutation = useGetALlEvents();
   const useDeleteEventMutation = useDeleteEvent();
+  const useGetAllBarbesMutation = useGetAllBarbers();
   // @ts-ignore
   // const useGetEventMutation = useGetEvent();
   const [allEvents, setAllEvents] = React.useState([]);
@@ -177,6 +189,11 @@ export const CalendarComponent = () => {
   const [showMessageRequiredRegister, setShowMessageRequiredRegister] =
     React.useState(true);
   const checkBarberIsRegister = useGetCheckRegisterBarber();
+  const [barberPreviewImgUrl, setBarberPreviewImgUrl] = React.useState<
+    null | string
+  >(null);
+  const [requiredBarberInputMessage, setRequiredBarberInputMessage] =
+    React.useState(false);
 
   function copyToClipboard(itemToCopy: string | undefined) {
     if (itemToCopy) {
@@ -239,8 +256,8 @@ export const CalendarComponent = () => {
         number: data.documentNumber.replace(regexpRemoveAllNoIsNumber, ''),
       };
     }
-
-    if (services.length && startDate && startTime && endTime) {
+    // if (services.length && startDate && startTime && endTime && barber) esse vai ser o if
+    if (services.length && startDate && startTime && endTime && barber) {
       let event = {
         title: data.name,
         servicesId: cleanServicesId,
@@ -261,15 +278,19 @@ export const CalendarComponent = () => {
           identification,
         },
         hasPayment: onlinePayment === 'true',
+        //  barber: barber.value,
       };
-
-      useNewEventMutation.mutate(event);
+      // useNewEventMutation.mutate(event);
     }
   };
 
   function checkServices() {
     if (!services.length) {
       setRequiredServiceInputMessage(true);
+    }
+
+    if (!barber) {
+      setRequiredBarberInputMessage(true);
     }
   }
 
@@ -452,6 +473,10 @@ export const CalendarComponent = () => {
     setServices(e);
   }
 
+  function handleSelectedBarber(e: any) {
+    setBarber(e);
+  }
+
   function handleCheckEmail(e: any) {
     let regexp = regexpToEmail;
     let emailIsValid = regexp.test(e.target.value);
@@ -481,6 +506,8 @@ export const CalendarComponent = () => {
     setValue('documentNumber', '');
     setOnlinePayment('true');
     setServices([]);
+    setBarber(null);
+    setBarberPreviewImgUrl(null);
   }
 
   interface ServiceOptionsProps {
@@ -551,6 +578,28 @@ export const CalendarComponent = () => {
     }
   }, [useGetAllEventsMutation.isSuccess, useGetAllEventsMutation.data]);
 
+  interface BarberOptionsProps {
+    name: string;
+    comission: number;
+    picture: string;
+    _id: string;
+  }
+
+  React.useEffect(() => {
+    if (useGetAllBarbesMutation.isSuccess) {
+      let formattedBarber = useGetAllBarbesMutation.data.map(
+        (barber: BarberOptionsProps) => {
+          return {
+            label: barber.name,
+            value: barber._id,
+          };
+        }
+      );
+
+      setBarberOptions(formattedBarber);
+    }
+  }, [useGetAllBarbesMutation.isSuccess, useGetAllBarbesMutation.data]);
+
   // verificando quando o get dos eventos der erro
   // deu erro 400 quer dizer que não fez o cadastro da barbearia então alert de aviso para  completar o cadastro
   // qualquer outro erro, vai dar o toast padrão
@@ -620,6 +669,24 @@ export const CalendarComponent = () => {
       setShowMessageRequiredRegister(false);
     }
   }, [checkBarberIsRegister.isSuccess]);
+
+  React.useEffect(() => {
+    if (barber && barber.value && useGetAllBarbesMutation.isSuccess) {
+      let selectedBarber: Array<BarberOptionsProps> =
+        useGetAllBarbesMutation.data.filter(
+          (barberItem: BarberOptionsProps) => {
+            return barberItem._id === barber.value;
+          }
+        );
+
+      setBarberPreviewImgUrl(selectedBarber[0].picture);
+    }
+  }, [
+    barber,
+    useGetAllBarbesMutation.isSuccess,
+    barber?.value,
+    useGetAllBarbesMutation.data,
+  ]);
 
   return (
     <>
@@ -776,6 +843,29 @@ export const CalendarComponent = () => {
                           onChange={(e) => handleSelectedServices(e)}
                         />
                         {requiredServiceInputMessage && (
+                          <ErrorMessage>
+                            <FaExclamationTriangle />
+                            This field is required
+                          </ErrorMessage>
+                        )}
+                      </Box>
+                      <Box
+                        mt="20px"
+                        onClick={() => setRequiredBarberInputMessage(false)}
+                      >
+                        <Styled.BarberPreviewImageContainer>
+                          <Label>Barbeiro (a)*</Label>
+                          {barberPreviewImgUrl && (
+                            <img src={barberPreviewImgUrl} alt="barbeiro" />
+                          )}
+                        </Styled.BarberPreviewImageContainer>
+                        <Select
+                          options={barberOptions}
+                          styles={colourStyles}
+                          placeholder="Selecione"
+                          onChange={(e) => handleSelectedBarber(e)}
+                        />
+                        {requiredBarberInputMessage && (
                           <ErrorMessage>
                             <FaExclamationTriangle />
                             This field is required

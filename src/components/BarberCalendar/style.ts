@@ -275,3 +275,23 @@ export const HelpEventText = styled.p`
     font-size: 14px;
   }
 `;
+
+export const BarberPreviewImageContainer = styled.div`
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+
+  img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+  }
+
+  @media (max-width: 769px) {
+    img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+  }
+`;
