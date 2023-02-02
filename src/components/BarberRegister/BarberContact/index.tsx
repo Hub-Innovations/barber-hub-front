@@ -469,6 +469,7 @@ function BarberRegisterContact() {
                 <Label>
                   Nome da barbearia:
                   <Input
+                    data-test="dados:nomeBarbearia"
                     type="text"
                     placeholder="Babearia dos sonhos"
                     {...register('barberName', { required: true })}
@@ -484,6 +485,7 @@ function BarberRegisterContact() {
                   <label id="CELLPHONE">
                     Celular
                     <InputMask
+                      data-test="dados:celBarbearia"
                       mask={'(99) 99999-9999'}
                       alwaysShowMask={false}
                       type={'tel'}
@@ -493,6 +495,7 @@ function BarberRegisterContact() {
                   </label>
                   <Styled.checkBoxFlex>
                     <Styled.CheckBox
+                      data-test="dados:checkBox"
                       type="checkbox"
                       {...register('haveWhatsApp')}
                     />
@@ -509,6 +512,7 @@ function BarberRegisterContact() {
                 <label id="FIX-CELLPHONE">
                   Telefone
                   <InputMask
+                    data-test="dados:telBarbearia"
                     mask={'(99) 9999-9999'}
                     alwaysShowMask={false}
                     type={'tel'}
@@ -522,6 +526,7 @@ function BarberRegisterContact() {
                 >
                   Email:
                   <Input
+                    data-test="dados:email"
                     type="email"
                     placeholder="exemplo@gmail.com"
                     {...register('email', { required: true })}
@@ -549,6 +554,7 @@ function BarberRegisterContact() {
                   <Label onChange={(e) => handleSearchCep(e)}>
                     Cep:
                     <Input
+                      data-test="dados:cep"
                       type="text"
                       placeholder="00000-000"
                       {...register('cep', {
@@ -596,6 +602,7 @@ function BarberRegisterContact() {
                 <Label>
                   Bairro:
                   <Input
+                    data-test="dados:bairro"
                     type="text"
                     placeholder="Bairro exemplo"
                     {...register('neighborhood', { required: true })}
@@ -610,6 +617,7 @@ function BarberRegisterContact() {
                 <Label>
                   Endereço:
                   <Input
+                    data-test="dados:endereco"
                     type="text"
                     placeholder="Rua logo ali perto"
                     {...register('address', { required: true })}
@@ -624,6 +632,7 @@ function BarberRegisterContact() {
                 <Label>
                   Complemento:
                   <Input
+                    data-test="dados:complemento"
                     type="text"
                     placeholder="Depois daquela rua"
                     {...register('addressComplement', { required: true })}
@@ -638,6 +647,7 @@ function BarberRegisterContact() {
                 <Label disabled={disableInputNumber}>
                   Número:
                   <Input
+                    data-test="dados:numero"
                     placeholder="23"
                     type="text"
                     {...register('addressNumber')}
@@ -655,7 +665,7 @@ function BarberRegisterContact() {
                 </Label>
               </Stack>
               {/* dasabilitar botao no loadin */}
-              <Styled.FormButton disabled={isLoading}>
+              <Styled.FormButton disabled={isLoading} data-test="dados:button">
                 {isLoading ? <Spinner color="#181b23" /> : 'Salvar'}
               </Styled.FormButton>
             </Styled.FormGrid>
